@@ -1,7 +1,12 @@
-$srcIcon: '../../assets/icon/slibarmenu.png';
+$srcIconMenuBar: '../../assets/icon/slibarmenu.png';
+$srcCommonIcon : '../../assets/icon/common-icon.png';
 
-.ms-icon{
-    background-image: url($srcIcon);
+.ms-icon-menubar{
+    background-image: url($srcIconMenuBar);
+    background-repeat: no-repeat;
+}
+.ms-icon-common{
+    background-image: url($srcCommonIcon);
     background-repeat: no-repeat;
 }
 .padding-left-10px{

@@ -5,44 +5,44 @@
         </div>
         <div class="ms-menu">
           <div class="ms-menu-item flex">
-            <span class=" ms-icon-model">
-                <div class="ms-menu-icon-dashboard special ms-icon"></div>
+            <span class=" ms-icon-menubar-model">
+                <div class="ms-menu-icon-dashboard special ms-icon-menubar"></div>
             </span>
             <span class="ms-menu-text text-padding-left special-text">Tổng quan</span>
           </div>
           <div class="ms-menu-item flex">
-            <span class="ms-icon-model">
-                <div class="ms-menu-icon-report ms-icon padding-left-10px"></div>
+            <span class="ms-icon-menubar-model">
+                <div class="ms-menu-icon-report ms-icon-menubar padding-left-10px"></div>
             </span>
             <span class="ms-menu-text text-padding-left">Báo cáo</span>
           </div>
           <div class="ms-menu-item flex">
-            <span class=" ms-icon-model">
-              <div class="ms-menu-icon-deliveryledge ms-icon padding-left-10px"></div>
+            <span class=" ms-icon-menubar-model">
+              <div class="ms-menu-icon-deliveryledge ms-icon-menubar padding-left-10px"></div>
             </span>
             <span class="ms-menu-text text-padding-left">Đơn hàng</span>
           </div>
           <div class="ms-menu-item flex">
-            <span class=" ms-icon-model">
-              <div class="ms-menu-icon-purchase ms-icon padding-left-10px"></div>
+            <span class=" ms-icon-menubar-model">
+              <div class="ms-menu-icon-purchase ms-icon-menubar padding-left-10px"></div>
             </span>
             <span class="ms-menu-text text-padding-left">Mua hàng</span>
           </div>
           <div class="ms-menu-item flex">
-            <span class=" ms-icon-model">
-              <div class="ms-menu-icon-promotion ms-icon padding-left-10px"></div>
+            <span class=" ms-icon-menubar-model">
+              <div class="ms-menu-icon-promotion ms-icon-menubar padding-left-10px"></div>
             </span>
             <span class="ms-menu-text text-padding-left">Khuyến mãi</span>
           </div>
           <div class="ms-menu-item flex">
-            <span class=" ms-icon-model">
-              <div class="ms-menu-icon-manage-store ms-icon padding-left-10px"></div>
+            <span class=" ms-icon-menubar-model">
+              <div class="ms-menu-icon-manage-store ms-icon-menubar padding-left-10px"></div>
             </span>
             <span class="ms-menu-text text-padding-left">Quản lý cửa hàng</span>
           </div>
           <div class="ms-menu-item flex">
-            <span class=" ms-icon-model">
-              <div class="ms-menu-icon-commodity ms-icon padding-left-10px"></div>
+            <span class=" ms-icon-menubar-model">
+              <div class="ms-menu-icon-commodity ms-icon-menubar padding-left-10px"></div>
             </span>
             <span class="ms-menu-text text-padding-left">Hàng hoá</span>
           </div>

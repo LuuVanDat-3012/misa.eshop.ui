@@ -1,10 +1,14 @@
 <template>
-  <div class="ms-grid">
+  <div class="ms-grid-container">
     <div class="ms-grid-header">
       <div class="ms-grid-store-code">
-          <div class="ms-grid-title"></div>
+          <div class="ms-grid-title">
+              <span>Mã cửa hàng</span>
+          </div>
           <div class="ms-filter-store-code">
-              <div class="ms-filter-option"></div>
+              <div class="ms-filter-option">
+                  <ms-filter-option />
+              </div>
               <div class="ms-filter-box"></div>
           </div>
       </div>
