@@ -2,6 +2,7 @@
     <div class="ms-content">
         <ms-tool-bar />
         <ms-grid />
+        <ms-dialog />
     </div>
 </template>
 <script>

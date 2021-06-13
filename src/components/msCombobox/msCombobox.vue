@@ -11,11 +11,10 @@
   >
     <input
       type="text"
-
       v-model="keySelected"
       v-on:keyup="autocomplete()"
       ref="inputcombobox"
-      class="ms-input"
+      class="ms-input-cbb"
     />
     <div class="select" v-if="isActived">
       <div
@@ -60,11 +59,8 @@ export default {
   },
   methods: {
     onclickComboboxButton () {
-      this.$refs.inputcombobox.focus()
       this.keyfilter = ''
-      if (this.isActived) {
-        this.isActived = false
-      } else this.isActived = true
+      this.isActived = !this.isActived
     },
     autocomplete () {
       if (this.itemsInFilter.length === 0) this.isWarning = true
@@ -110,12 +106,6 @@ export default {
           return
         }
       }
-    },
-    getValue () {
-      return this.itemSelected.value
-    },
-    getText () {
-      return this.itemSelected.text
     },
     focus () {
       this.isFocus = true
