@@ -12,17 +12,17 @@
     <input
       type="text"
       v-model="keySelected"
-      v-on:keyup="autocomplete()"
+      v-on:keyup="checkValue()"
       ref="inputcombobox"
       class="ms-input-cbb"
     />
     <div class="select" v-if="isActived">
       <div
         class="option"
-        v-for="(item, index) in itemsInFilter"
+        v-for="(item, index) in items"
         :key="index"
         :class="index == indexSelected ? 'isselected' : ''"
-        @click="enter(index)"
+        @click="enter(index, item.value, item.text)"
       >
         {{ item.text }}
       </div>
@@ -40,7 +40,7 @@ export default {
   name: 'msCombobox',
   data () {
     return {
-
+      items: [],
       itemSelected: { value: 0, text: 'Cửa hàng 1' },
       isActived: false,
       keySelected: '',
@@ -51,17 +51,12 @@ export default {
       isWarning: false
     }
   },
-  props: {
-    items: {
-      typeof: Array
-    }
-  },
   methods: {
     onclickComboboxButton () {
       this.keyfilter = ''
       this.isActived = !this.isActived
     },
-    autocomplete () {
+    checkValue () {
       if (this.itemsInFilter.length === 0) this.isWarning = true
       if (this.itemsInFilter.length > 0) this.isWarning = false
       if (
@@ -82,7 +77,7 @@ export default {
         this.indexHover--
       }
     },
-    enter (index) {
+    enter (index, val, text) {
       if (index != null) {
         this.itemSelected = this.itemsInFilter[index]
         this.keySelected = this.itemsInFilter[index].text
@@ -97,6 +92,8 @@ export default {
           this.setIndexSelected()
         }
       }
+      this.itemSelected.value = val
+      this.itemSelected.text = text
     },
     setIndexSelected () {
       for (var i = 0; i < this.items.length; i++) {

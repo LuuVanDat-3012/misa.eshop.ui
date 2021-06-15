@@ -11,7 +11,8 @@ import msDialog from '@/components/msDialog/msDialog.vue'
 import msNavigate from '@/components/msNavigate/msNavigate.vue'
 import msPopupDelete from '@/components/msPopupDelete/msPopupDelete.vue'
 import msPopupSave from '@/components/msPopupSave/msPopupSave.vue'
-
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+Vue.component(PulseLoader)
 Vue.component(msPopupSave.name, msPopupSave)
 Vue.component(msPopupDelete.name, msPopupDelete)
 Vue.component(msDialog.name, msDialog)

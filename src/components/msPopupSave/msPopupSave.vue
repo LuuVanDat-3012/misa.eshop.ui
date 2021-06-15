@@ -4,7 +4,7 @@
     <div class="popup">
       <div class="popup-title">
         <div class="content-title">Dữ liệu chưa được lưu</div>
-        <div class="btn-close" @click="ClosePopup"></div>
+        <div class="btn-close" ></div>
       </div>
 
       <div class="popop-content">

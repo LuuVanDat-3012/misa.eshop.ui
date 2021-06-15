@@ -16,7 +16,7 @@
       <div class="btn-delete-icon  ms-icon-common"></div>
       <div class="btn-delete-text text-common">Xoá</div>
     </div>
-    <div class="ms-btn-reload ms-btn-common specia-border">
+    <div class="ms-btn-reload ms-btn-common specia-border" @click="loadData">
       <div class="btn-reload-icon  ms-icon-common"></div>
       <div class="btn-reload-text text-common">Nạp</div>
     </div>
@@ -28,6 +28,9 @@ export default {
   methods: {
     openDialog () {
       this.$emit('openDialog')
+    },
+    loadData () {
+      this.$emit('loadData')
     }
   }
 }

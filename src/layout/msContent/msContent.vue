@@ -1,7 +1,7 @@
 <template>
     <div class="ms-content">
-        <ms-tool-bar  @openDialog='openDialog'/>
-        <ms-grid />
+        <ms-tool-bar  @openDialog='openDialog' @loadData="loadData" class="custom-ms-toolbar"/>
+        <ms-grid ref="grid"/>
         <ms-dialog v-show="isActiveDialog" @closeDialog='isActiveDialog = false' ref="dialog"/>
         <ms-popup-delete v-show="isActivePopupDelete" />
         <ms-popup-save v-show="isActivePopupSave" />
@@ -21,9 +21,21 @@ export default {
   },
   methods:
   {
-    // Hàm hiển thị dialog thêm mới
+    /**
+     * Hàm hiện thị dialog và load danh sách quốc gia
+     * CreatedBy: lVDat (15/06/2021)
+     */
     openDialog () {
+      this.$refs.dialog.getCountry()
+      this.$refs.dialog.focusInput()
       this.isActiveDialog = true
+    },
+    /**
+     * Hàm gọi tới component ms-grid để load lại dữ liệu
+     * CreateBy: LVDat (15/06/2021)
+     */
+    loadData () {
+      this.$refs.grid.loadData()
     }
   }
 }

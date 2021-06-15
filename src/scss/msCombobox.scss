@@ -35,20 +35,26 @@
 .select {
     position: absolute;
     border: 1px solid rgba(214, 207, 207, 0.938);
-    width: 100px;
     transform-origin: 0 0;
+    width: 178px;
     animation: 0.4s dropdown-menu forwards;
     border-radius: 5px;
-    box-shadow: 1px 1px 1px #bbbbbb;
+    box-shadow: 1px 1px #bbbbbb;
     z-index: 9999999999999;
+    margin-top: 4px;
+    box-sizing: border-box;
+    margin-left: -2px;
 }
 
 .select .option {
     padding: 5px 10px;
-    height: 13px;
+    height: 21px;
+    width: 178px;
     display: flex;
     align-items: center;
     background-color: #ffffff;
+    box-sizing: border-box;
+    border-radius: 2px;
 }
 
 .select .option:hover {
@@ -60,10 +66,6 @@
 .isselected {
     background-color: #6b6f9d !important;
     color: #ffffff;
-}
-
-.rotate {
-    animation: 0.4s rotate180 forwards;
 }
 
 .dropdown-icon {

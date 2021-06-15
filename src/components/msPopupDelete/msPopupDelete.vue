@@ -4,7 +4,7 @@
         <div class="popup">
             <div class="popup-title">
                 <div class="content-title">Xoá dữ liệu</div>
-                <div class="btn-close" @click="ClosePopup"></div>
+                <div class="btn-close" ></div>
             </div>
 
             <div class="popop-content">
@@ -13,11 +13,11 @@
             </div>
 
             <div class="popup-button">
-                <div class="btn-cancel-popup " @click="closePopup">
+                <div class="btn-cancel-popup " >
                    <div class="btn-cancel-popup-icon"></div>
                    <div class="btn-cancel-popup-text">Hủy bỏ</div>
                 </div>
-                <div class="btn-confirm" @click="deleteStore">
+                <div class="btn-confirm">
                      <div class="btn-confirm-icon"></div>
                    <div class="btn-confirm-text">Xóa</div>
                 </div>
