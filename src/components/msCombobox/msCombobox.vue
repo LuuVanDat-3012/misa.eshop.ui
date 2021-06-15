@@ -40,14 +40,8 @@ export default {
   name: 'msCombobox',
   data () {
     return {
-      items: [
-        { value: 0, text: 'Cửa hàng 1' },
-        { value: 1, text: 'Cửa hàng 2' },
-        { value: 2, text: 'Cửa hàng 3' },
-        { value: 3, text: 'Cửa hàng 4' },
-        { value: 4, text: 'Cửa hàng 5' }
-      ],
-      itemSelected: { value: -1, text: '' },
+
+      itemSelected: { value: 0, text: 'Cửa hàng 1' },
       isActived: false,
       keySelected: '',
       indexHover: 0,
@@ -55,6 +49,11 @@ export default {
       isFocus: false,
       indexSelected: 0,
       isWarning: false
+    }
+  },
+  props: {
+    items: {
+      typeof: Array
     }
   },
   methods: {

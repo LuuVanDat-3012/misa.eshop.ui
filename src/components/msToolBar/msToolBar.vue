@@ -1,6 +1,6 @@
 <template>
   <div class="ms-toolbar">
-    <div class="ms-btn-insert ms-btn-common">
+    <div class="ms-btn-insert ms-btn-common" @click="openDialog">
       <div class="btn-insert-icon ms-icon-common"></div>
       <div class="btn-insert-text text-common">Thêm mới</div>
     </div>
@@ -24,7 +24,12 @@
 </template>
 <script>
 export default {
-  name: 'msToolBar'
+  name: 'msToolBar',
+  methods: {
+    openDialog () {
+      this.$emit('openDialog')
+    }
+  }
 }
 </script>
 <style lang="scss">
