@@ -1,16 +1,29 @@
 <template>
-    <div class="ms-content">
-        <ms-tool-bar  @openDialog='openDialog' @loadData="loadData" class="custom-ms-toolbar"/>
-        <ms-grid ref="grid"/>
-        <ms-dialog v-show="isActiveDialog" @closeDialog='isActiveDialog = false' ref="dialog"/>
-        <ms-popup-delete v-show="isActivePopupDelete" />
-        <ms-popup-save v-show="isActivePopupSave" />
-    </div>
+  <div class="ms-content">
+    <ms-tool-bar
+      @openDialog="openDialog"
+      @deleteStore="deleteStore"
+      @loadStore="loadStore"
+      @editStore="editStore"
+    />
+    <ms-grid ref="grid" />
+    <ms-dialog
+      v-show="isActiveDialog"
+      @closeDialog="isActiveDialog = false"
+      ref="dialog"
+      @loadStore="loadStore"
+    />
+    <ms-popup-save v-show="isActivePopupSave" />
+    <ms-popup-delete
+      v-show="isActivePopupDelete"
+      ref="popupDelete"
+      @loadStore="loadStore"
+      @closePopupDelete="isActivePopupDelete = !isActivePopupDelete"
+    />
+  </div>
 </template>
 <script>
-import msPopupSave from '../../components/msPopupSave/msPopupSave.vue'
 export default {
-  components: { msPopupSave },
   name: 'msContent',
   data () {
     return {
@@ -19,29 +32,43 @@ export default {
       isActivePopupSave: false // Biến hiển thị popup delete
     }
   },
-  methods:
-  {
+  methods: {
     /**
-     * Hàm hiện thị dialog và load danh sách quốc gia
-     * CreatedBy: lVDat (15/06/2021)
+     * Hàm hiển thị dialog và gọi hàm load Country của dialog
+     * CreatedBy: LVDat (16/06/2021)
      */
     openDialog () {
-      this.$refs.dialog.getCountry()
-      this.$refs.dialog.focusInput()
       this.isActiveDialog = true
+      this.$refs.dialog.loadCountry()
     },
     /**
-     * Hàm gọi tới component ms-grid để load lại dữ liệu
-     * CreateBy: LVDat (15/06/2021)
+     * Hàm gửi yêu cầu load lại dữ liệu
+     * CreatedBy: LVDat (16/06/2021)
      */
-    loadData () {
-      this.$refs.grid.loadData()
+    loadStore () {
+      this.$refs.grid.loadStore()
+    },
+    /**
+     * Hàm hiển thị popup xác nhận xoá
+     * CreatedBy: LVDat (16/06/2021)
+     */
+    deleteStore () {
+      this.isActivePopupDelete = true
+      this.$refs.popupDelete.store = this.$refs.grid.storeSelected
+    },
+    /**
+     * Hàm gửi đi 1 store để hiện thị lên dialog và sửa
+     * CreatedBy: LVDat (16/06/2021)
+     */
+    editStore () {
+      this.isActiveDialog = true
+      this.$refs.dialog.editStore(this.$refs.grid.storeSelected)
     }
   }
 }
 </script>
 
 <style lang="scss">
-@import '../../scss/common.scss';
-@import '../../scss/msContent.scss'
+@import "../../scss/common.scss";
+@import "../../scss/msContent.scss";
 </style>

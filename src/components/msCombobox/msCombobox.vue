@@ -5,23 +5,24 @@
     "
     v-on:keyup.40="arrowDown()"
     v-on:keyup.38="arrowUp()"
-    v-on:keyup.13="enter()"
-    @click="focus()"
     class="ms-combobox"
+    v-on:keyup.13="enter"
   >
+  {{testValue}}
     <input
       type="text"
-      v-model="keySelected"
+      v-model="keyFilter"
       v-on:keyup="checkValue()"
       ref="inputcombobox"
       class="ms-input-cbb"
+      :placeholder="placeholder"
     />
     <div class="select" v-if="isActived">
       <div
         class="option"
-        v-for="(item, index) in items"
+        v-for="(item, index) in listItemInFilter"
         :key="index"
-        :class="index == indexSelected ? 'isselected' : ''"
+        :class="item.value == itemSelected.value ? 'isselected' : ''"
         @click="enter(index, item.value, item.text)"
       >
         {{ item.text }}
@@ -37,38 +38,52 @@
 </template>
 <script>
 export default {
+
   name: 'msCombobox',
   data () {
     return {
-      items: [],
-      itemSelected: { value: 0, text: 'Cửa hàng 1' },
+      itemSelected: { value: 0, text: 'demo' },
       isActived: false,
       keySelected: '',
       indexHover: 0,
-      keyfilter: '',
+      keyFilter: '',
       isFocus: false,
       indexSelected: 0,
-      isWarning: false
+      isWarning: false,
+      listItemInFilter: [],
+      itemId: '',
+      demo: []
     }
   },
   methods: {
     onclickComboboxButton () {
-      this.keyfilter = ''
+      this.listItemInFilter = []
+      this.keyFilter = ''
       this.isActived = !this.isActived
+      this.listItemInFilter = this.items
     },
     checkValue () {
-      if (this.itemsInFilter.length === 0) this.isWarning = true
-      if (this.itemsInFilter.length > 0) this.isWarning = false
-      if (
-        this.keySelected === '' ||
-        this.keySelected === this.itemSelected.text
-      ) { return }
-      if (this.itemsInFilter.length > 0) {
+      this.listItemInFilter = []
+      this.keyFilter =
+        this.keyFilter.charAt(0).toUpperCase() + this.keyFilter.slice(1)
+      this.items.forEach(element => {
+        if (element.text.indexOf(this.keyFilter) !== -1) {
+          // console.log('vao roi ne')
+          this.listItemInFilter.push({
+            value: element.value,
+            text: element.text
+          })
+        }
+      })
+      if (this.listItemInFilter.length > 0) {
         this.isActived = true
+        this.isWarning = false
+      } else {
+        this.isWarning = true
       }
     },
     arrowDown () {
-      if (this.indexHover < this.itemsInFilter.length - 1) {
+      if (this.indexHover < this.listItemInFilter.length - 1) {
         this.indexHover++
       }
     },
@@ -77,23 +92,36 @@ export default {
         this.indexHover--
       }
     },
+    loop () {
+      this.items.forEach(e => {
+        if (e.value === this.itemId) { this.keyFilter = e.text }
+      })
+    },
+    setValue (val) {
+      console.log(this.demo)
+      this.itemId = val
+      this.loop()
+      this.items.forEach(e => {
+        if (e.value === this.itemId) { this.keyFilter = e.text }
+      })
+    },
     enter (index, val, text) {
       if (index != null) {
-        this.itemSelected = this.itemsInFilter[index]
-        this.keySelected = this.itemsInFilter[index].text
+        this.itemSelected = this.listItemInFilter[index]
         this.indexHover = index
         this.isActived = false
         this.setIndexSelected()
       } else {
         if (this.itemsInFilter[this.indexHover] != null) {
-          this.itemSelected = this.itemsInFilter[this.indexHover]
-          this.keySelected = this.itemsInFilter[this.indexHover].text
+          this.itemSelected = this.listItemInFilter[this.indexHover]
           this.isActived = false
           this.setIndexSelected()
         }
       }
       this.itemSelected.value = val
       this.itemSelected.text = text
+      this.keyFilter = this.itemSelected.text
+      this.$emit('changeValue', this.itemSelected.value)
     },
     setIndexSelected () {
       for (var i = 0; i < this.items.length; i++) {
@@ -102,21 +130,25 @@ export default {
           return
         }
       }
+    }
+  },
+  props: {
+    items: {
+      type: Array,
+      default: () => []
     },
-    focus () {
-      this.isFocus = true
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    testValue: {
+      type: String
     }
   },
-  computed: {
-    itemsInFilter () {
-      return this.items.filter(item =>
-        item.text.toLowerCase().includes(this.keyfilter.toLowerCase())
-      )
-    }
-  },
+
   watch: {
     keySelected: function () {
-      this.keyfilter = this.keySelected
+      this.keyFilter = this.keySelected
       if (this.itemsInFilter.length === 0) this.isActived = false
       if (this.keySelected === '') this.isActived = false
       if (this.keySelected !== this.itemSelected.text) {

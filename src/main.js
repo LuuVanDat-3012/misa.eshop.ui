@@ -7,6 +7,13 @@ import './globalComponents.js'
 import VueColumnsResizable from 'vue-columns-resizable'
 import './lib/axios'
 import './filter/msFilter'
+import VueToastify from 'vue-toastify'
+
+Vue.use(VueToastify, {
+  singular: true,
+  position: 'top-right',
+  theme: 'light'
+})
 
 Vue.use(VueColumnsResizable)
 Vue.config.productionTip = false

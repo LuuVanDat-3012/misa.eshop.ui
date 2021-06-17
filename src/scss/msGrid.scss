@@ -1,16 +1,17 @@
     .ms-grid-container {
         height: calc(100% - 88px);
-        overflow-y: auto;
+        overflow-y: scroll;
         margin-bottom: 2px;
         background-color: #ffffff;
         box-sizing: border-box;
+        width: 100%;
     }
     
     .ms-grid-content {
-        width: 100%;
         height: 100%;
         border-collapse: collapse;
         box-sizing: border-box;
+        width: 100%;
     }
     
     .ms-th {
@@ -38,7 +39,7 @@
     }
     
     .ms-th-store-code {
-        width: 8.983%;
+        width: 160px;
         flex-direction: column;
     }
     
@@ -67,7 +68,7 @@
     /**col store name */
     
     .ms-th-store-name {
-        width: 14.067%;
+        width: 249px;
     }
     
     .ms-th-store-address {
@@ -75,20 +76,24 @@
     }
     
     .ms-th-store-phone {
-        width: 7.288%;
+        width: 135px;
+    }
+    .ms-th-store-status{
+        width: 149px;
     }
     
     td {
         height: 31.4px;
         min-height: 31.4px;
+        max-height: 31.4px;
         box-sizing: border-box;
         padding-left: 10px;
-        border-left: 1px solid #dfdfdf;
-        border-bottom: 1px solid #dfdfdf;
+        border-left: 0.11px solid #dfdfdf;
+        border-bottom: 0.11px solid #dfdfdf;
     }
     
     tr {
-        border: 1px solid #ddd !important;
+        // border-bottom: 1px solid #dfdfdf !important;
         padding: 8px;
         box-sizing: border-box;
         color: #404040;
@@ -217,7 +222,7 @@
     }
     
     .vue-columns-resizable {
-        z-index: 777777999 !important;
+      z-index: 999999999;
     }
     
     .loading {
@@ -240,4 +245,8 @@
         top: 50%;
         left: 50%;
         z-index: 77777;
+    }
+    .ms-btn-page-common:hover{
+        border: 1px solid #636dde;
+        cursor: pointer;
     }

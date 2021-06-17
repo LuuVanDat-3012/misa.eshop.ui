@@ -19,7 +19,7 @@
     display: flex;
     flex-direction: column;
     border-radius: 3px;
-    border: 1px solid #dfdfdf;
+    border: 1px solid #bbbbbb;
     animation: animationDisplay 0.5s forwards;
     /**CSS header dialog */
     .ms-dialog-header {
@@ -70,6 +70,7 @@
             display: flex;
             flex-direction: row;
             margin: 5px;
+            align-items: center;
             .ms-form-textarea {
                 width: calc(100% - 105px);
                 height: 80px;
@@ -122,10 +123,13 @@
         outline: 0;
         border: 0;
     }
-    .ms-field-input :hover {
-        background-color: red;
+    .ms-field-input :focus {
+        background-color: yellow;
     }
-    // Custom combobox
+    // Custom
+    .ms-form-text:focus {
+        border: 1px solid #2b3173 ;
+    }
     .ms-form-select {
         position: relative;
         box-sizing: border-box;
@@ -156,6 +160,8 @@
     .align-item-left {
         justify-content: left;
     }
+
+
     //CSS - dialog footer
     .ms-dialog-footer {
         width: 100%;
@@ -221,6 +227,9 @@
                 font-weight: 600;
                 background-color: #2b3173;
                 right: calc(107.75px + 140.09px);
+                width: 58.54px;
+                height: 35px;
+                box-sizing: border-box;
                 .ms-btn-save-icon {
                     background-position: -330px -129px;
                     width: 11px;
@@ -231,8 +240,8 @@
                     padding: 0px 5px;
                 }
             }
-            .ms-btn-save :hover {
-                background-color: #6b6f9d;
+            .ms-btn-save-icon :hover {
+                background-color: red;
             }
             //CSS button build
             .ms-btn-build {
@@ -277,7 +286,24 @@
             }
         }
     }
-    .warning {
+    .error {
         border: 1px solid #ff0000 !important;
     }
+
+    // CSS lỗi
+    .zoomOut{
+        width: 440px !important;
+    }
+    .ms-icon-error{
+        background: url('../../assets/icon/error_input.png') no-repeat -1px -1px;
+        width: 14px;
+        height: 14px;
+        margin: 0px 4px;
+    }
+    .icon-error-special{
+        position: absolute;
+        right: 14px;
+        top: 110px;
+    }
+
 }

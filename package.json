@@ -17,6 +17,7 @@
     "vue-columns-resizable-vuetify": "^1.0.3",
     "vue-router": "^3.2.0",
     "vue-spinner": "^1.0.4",
+    "vue-toastify": "^1.8.0",
     "vuetify": "^2.5.3",
     "vuex": "^3.4.0"
   },

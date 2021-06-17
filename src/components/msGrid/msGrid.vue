@@ -16,9 +16,9 @@
               <span>Mã cửa hàng</span>
             </div>
             <div class="ms-filter">
-              <ms-filter-option />
+              <ms-filter-option ref="optionCode"/>
               <div class="ms-filter-input">
-                <input type="text" class="ms-input" />
+                <input type="text" class="ms-input" v-model="filterCode" @keyup.enter="searchWithFilter"/>
               </div>
             </div>
           </th>
@@ -28,9 +28,9 @@
               <span>Tên cửa hàng</span>
             </div>
             <div class="ms-filter">
-              <ms-filter-option />
+              <ms-filter-option ref="optionName" />
               <div class="ms-filter-input">
-                <input type="text" class="ms-input" />
+                <input type="text" class="ms-input" v-model="filterName"  @keyup.enter="searchWithFilter"/>
               </div>
             </div>
           </th>
@@ -40,9 +40,9 @@
               <span>Địa chỉ</span>
             </div>
             <div class="ms-filter">
-              <ms-filter-option />
+              <ms-filter-option ref="optionAddress"/>
               <div class="ms-filter-input">
-                <input type="text" class="ms-input" />
+                <input type="text" class="ms-input" v-model="filterAddress"  @keyup.enter="searchWithFilter"/>
               </div>
             </div>
           </th>
@@ -52,9 +52,9 @@
               <span>Số điện thoại</span>
             </div>
             <div class="ms-filter">
-              <ms-filter-option />
+              <ms-filter-option ref="optionPhone"/>
               <div class="ms-filter-input">
-                <input type="text" class="ms-input" />
+                <input type="text" class="ms-input" v-model="filterPhone"  @keyup.enter="searchWithFilter"/>
               </div>
             </div>
           </th>
@@ -90,11 +90,11 @@
          <div class="ms-btn-page-common">
             <div class="ms-pre-page-icon ms-icon-common"></div>
         </div>
-        <div class="ms-page-text"> Trang 1 </div>
+        <div class="ms-page-text"> Trang {{pageIndex}} </div>
         <div class="ms-input-page">
-          <input type="text"  />
+          <input type="text"  v-model="pageIndex"/>
         </div>
-        <div class="ms-page-text"> trên 20 </div>
+        <div class="ms-page-text"> trên {{totalPage}} </div>
        <div class="ms-btn-page-common">
             <div class="ms-next-page-icon ms-icon-common"></div>
         </div>
@@ -105,11 +105,11 @@
             <div class="ms-reload-icon ms-icon-common "></div>
         </div>
         <div class="ms-select-pagesize">
-          <select name="" id="">
-            <option value="15">15</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
+          <select name="" id="" v-model="pageSize">
+            <option :value="15" :selected="true">15</option>
+            <option :value="25">25</option>
+            <option :value="50">50</option>
+            <option :value="100">100</option>
           </select>
         </div>
 
@@ -128,7 +128,7 @@ export default {
   data () {
     return {
       listStore: [], // Biến lưu danh sách các cửa hàng
-      sizeGrid: 0, // Biến xác định kichsd thước của bảng
+      sizeGrid: 0, // Biến xác định kích thước của bảng
       storeSelected: {
         storeId: '00000000-0000-0000-0000-000000000000',
         storeCode: '',
@@ -147,10 +147,26 @@ export default {
         modifiedBy: '',
         editMode: 0
       },
-      isLoading: false
+      isLoading: false,
+      filterCode: '',
+      filterName: '',
+      filterAddress: '',
+      filterPhone: '',
+      filterStatus: 1,
+      filterModeCode: 1,
+      filterModeName: 1,
+      filterModePhone: 1,
+      filterModeAddress: 1,
+      pageSize: 15,
+      pageIndex: 1,
+      totalPage: 1
     }
   },
   methods: {
+    /**
+     * Hàm lưu lại thông tin store đã chọn
+     * CreatedBy: LVDat (16/06/2021)
+     */
     selectStore (store) {
       this.storeSelected = store
     },
@@ -158,12 +174,25 @@ export default {
      * Hàm load lại toàn bộ dữ liệu
      * CreatedBy: LVDat (15/06/2021)
      */
-    loadData () {
+    loadStore () {
       this.isLoading = true
-      this.axios.get('Stores?pageIndex=1&pageSize=50').then((response) => {
+      this.axios.get('Stores?pageIndex=1&pageSize=' + this.pageSize).then((response) => {
         this.listStore = response.data.data
         this.sizeGrid = response.data.data * 31.4 + 64
         this.isLoading = false
+        if (response.data.data.length > 0) {
+          this.storeSelected = response.data.data[0]
+        }
+      })
+    },
+    searchWithFilter () {
+      this.isLoading = true
+      this.axios.get('Stores/filter?storeCode=' + this.filterCode + '&storeName=' + this.filterName + '&address=' + this.filterAddress + '&phoneNumber=' + this.filterPhone + '&status=' +
+      this.filterStatus + '&pageIndex=' + this.pageIndex + '&pageSize=' + this.pageSize).then(response => {
+        this.listStore = response.data.data
+        this.sizeGrid = response.data.data.length * 31.4 + 64
+        this.isLoading = false
+        this.totalPage = response.data.totalPage
         if (response.data.data.length > 0) {
           this.storeSelected = response.data.data[0]
         }
@@ -176,14 +205,20 @@ export default {
   */
   mounted () {
     this.isLoading = true
-    this.axios.get('Stores?pageIndex=1&pageSize=50').then((response) => {
+    this.axios.get('Stores/filter?&pageIndex=' + 1 + '&pageSize=' + 15).then((response) => {
       this.listStore = response.data.data
       this.sizeGrid = response.data.data * 31.4 + 64
       this.isLoading = false
+      this.totalPage = response.data.totalPage
       if (response.data.data.length > 0) {
         this.storeSelected = response.data.data[0]
       }
     })
+  },
+  watch: {
+    pageSize: function () {
+      this.searchWithFilter()
+    }
   }
 }
 </script>
