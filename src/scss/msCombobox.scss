@@ -44,12 +44,14 @@
     margin-top: 4px;
     box-sizing: border-box;
     margin-left: -2px;
+    max-height: 200px;
+    overflow-y: scroll;
 }
 
 .select .option {
     padding: 5px 10px;
     height: 21px;
-    width: 178px;
+    width: 100%;
     display: flex;
     align-items: center;
     background-color: #ffffff;

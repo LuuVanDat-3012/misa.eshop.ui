@@ -6,12 +6,13 @@
       @loadStore="loadStore"
       @editStore="editStore"
     />
-    <ms-grid ref="grid" />
+    <ms-grid ref="grid" @editStore='editStore' @getStoreSelected='getStoreSelected'/>
     <ms-dialog
       v-show="isActiveDialog"
-      @closeDialog="isActiveDialog = false"
+      @closeDialog="closeDialog"
       ref="dialog"
-      @loadStore="loadStore"
+      :editMode="editMode"
+      @displayPopupError="displayPopupError"
     />
     <ms-popup-save v-show="isActivePopupSave" />
     <ms-popup-delete
@@ -20,6 +21,7 @@
       @loadStore="loadStore"
       @closePopupDelete="isActivePopupDelete = !isActivePopupDelete"
     />
+    <ms-popup-error v-show="isActivePopupError" @closePopupError="closePopupError"/>
   </div>
 </template>
 <script>
@@ -29,7 +31,10 @@ export default {
     return {
       isActiveDialog: false, // Biến hiển thị dialog
       isActivePopupDelete: false, // Biến hiển thị popup delete
-      isActivePopupSave: false // Biến hiển thị popup delete
+      isActivePopupSave: false, // Biến hiển thị popup save
+      isActivePopupError: false, // Biến hiển thị popup error
+      editMode: 0,
+      storeSelected: ''
     }
   },
   methods: {
@@ -39,14 +44,26 @@ export default {
      */
     openDialog () {
       this.isActiveDialog = true
+      this.editMode = 1
+      this.$refs.grid.storeSelected = this.$refs.dialog.store
       this.$refs.dialog.loadCountry()
+      this.$refs.dialog.focusInput()
+    },
+    closeDialog (store) {
+      this.isActiveDialog = false
+      this.$refs.grid.storeSelected = store
+      this.$refs.grid.listStore.forEach(element => {
+        if (element.storeId === store.storeId) {
+          element = store
+        }
+      })
     },
     /**
      * Hàm gửi yêu cầu load lại dữ liệu
      * CreatedBy: LVDat (16/06/2021)
      */
     loadStore () {
-      this.$refs.grid.loadStore()
+      this.$refs.grid.loadStoreDefault()
     },
     /**
      * Hàm hiển thị popup xác nhận xoá
@@ -62,7 +79,24 @@ export default {
      */
     editStore () {
       this.isActiveDialog = true
-      this.$refs.dialog.editStore(this.$refs.grid.storeSelected)
+      this.editMode = 2
+      this.$refs.dialog.editStore(this.storeSelected)
+    },
+    /**
+     * Hàm lấy thông tin store khi nhấn click trên grid
+     */
+    getStoreSelected (store) {
+      this.storeSelected = store
+    },
+    /**
+     * Hàm hiện thị popup error khi trùng mã
+     */
+    displayPopupError () {
+      this.isActivePopupError = true
+    },
+    closePopupError () {
+      this.isActivePopupError = false
+      this.$refs.dialog.focusInput()
     }
   }
 }

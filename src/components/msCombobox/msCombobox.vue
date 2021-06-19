@@ -8,14 +8,13 @@
     class="ms-combobox"
     v-on:keyup.13="enter"
   >
-  {{testValue}}
     <input
       type="text"
       v-model="keyFilter"
       v-on:keyup="checkValue()"
       ref="inputcombobox"
       class="ms-input-cbb"
-      :placeholder="placeholder"
+      placeholder="Nhập để tìm kiếm"
     />
     <div class="select" v-if="isActived">
       <div
@@ -57,10 +56,13 @@ export default {
   },
   methods: {
     onclickComboboxButton () {
-      this.listItemInFilter = []
-      this.keyFilter = ''
-      this.isActived = !this.isActived
       this.listItemInFilter = this.items
+      if (this.isActived === false) {
+        this.isActived = true
+        this.$emit('loadData')
+      } else {
+        this.isActived = false
+      }
     },
     checkValue () {
       this.listItemInFilter = []
@@ -92,19 +94,6 @@ export default {
         this.indexHover--
       }
     },
-    loop () {
-      this.items.forEach(e => {
-        if (e.value === this.itemId) { this.keyFilter = e.text }
-      })
-    },
-    setValue (val) {
-      console.log(this.demo)
-      this.itemId = val
-      this.loop()
-      this.items.forEach(e => {
-        if (e.value === this.itemId) { this.keyFilter = e.text }
-      })
-    },
     enter (index, val, text) {
       if (index != null) {
         this.itemSelected = this.listItemInFilter[index]
@@ -115,12 +104,13 @@ export default {
         if (this.itemsInFilter[this.indexHover] != null) {
           this.itemSelected = this.listItemInFilter[this.indexHover]
           this.isActived = false
-          this.setIndexSelected()
         }
       }
       this.itemSelected.value = val
       this.itemSelected.text = text
       this.keyFilter = this.itemSelected.text
+      this.listItemInFilter = []
+      this.listItemInFilter = this.items
       this.$emit('changeValue', this.itemSelected.value)
     },
     setIndexSelected () {
@@ -136,27 +126,11 @@ export default {
     items: {
       type: Array,
       default: () => []
-    },
-    placeholder: {
-      type: String,
-      default: ''
-    },
-    testValue: {
-      type: String
     }
   },
 
   watch: {
-    keySelected: function () {
-      this.keyFilter = this.keySelected
-      if (this.itemsInFilter.length === 0) this.isActived = false
-      if (this.keySelected === '') this.isActived = false
-      if (this.keySelected !== this.itemSelected.text) {
-        this.itemSelected = { value: -1, text: '' }
-        this.indexSelected = 0
-        this.indexHover = 0
-      }
-    },
+
     indexHover: function () {
       this.indexSelected = this.indexHover
     }

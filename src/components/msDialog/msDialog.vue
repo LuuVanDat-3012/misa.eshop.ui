@@ -1,9 +1,10 @@
 <template>
   <div class="ms-dialog">
     <div class="ms-dialog-model"></div>
+
     <div class="ms-dialog-main">
       <div class="ms-dialog-header">
-        <div class="ms-header-title">Thêm mới cửa hàng</div>
+        <div class="ms-header-title">{{ editModeTitle }}</div>
         <div class="ms-icon-close" @click="closeDialog"></div>
       </div>
 
@@ -21,8 +22,8 @@
               class="ms-field-input"
               v-model="store.storeCode"
               ref="autofocus"
-              @keyup="validateStoreCode()"
-              @keydown.tab="validateStoreCode()"
+              @keyup="validateStoreCode"
+              @keydown.tab="validateStoreCode"
             />
           </div>
           <div class="ms-icon-error" v-if="isWarningCode"></div>
@@ -40,9 +41,13 @@
               type="text"
               class="ms-field-input"
               v-model="store.storeName"
-              @keydown.tab="validateStoreName()"
+              @keyup="validateStoreName"
+              @keydown.tab="validateStoreName"
             />
-             <div class="ms-icon-error icon-error-special" v-if="isWarningName"></div>
+            <div
+              class="ms-icon-error icon-error-special"
+              v-if="isWarningName"
+            ></div>
           </div>
         </div>
 
@@ -50,14 +55,19 @@
           <div class="ms-row-text">
             Địa chỉ <span class="ms-field-requied">*</span>
           </div>
-          <div class="ms-form-textarea" :class="{ error: isWarningAddress, zoomOut: isWarningAddress }">
-            <input
-              type="textarea"
-              class="ms-field-textarea"
+          <div
+            class="ms-field-textarea"
+            :class="{ error: isWarningAddress, zoomOut: isWarningAddress }"
+          >
+            <textarea
+              name=""
+              id="text-arena"
+              cols="30"
+              rows="10"
+              @keyup="validateStoreAddress"
+              @keydown.tab="validateStoreAddress"
               v-model="store.address"
-              @keyup="validateStoreAddress()"
-              @keydown.tab="validateStoreAddress()"
-            />
+            ></textarea>
           </div>
           <div class="ms-icon-error" v-if="isWarningAddress"></div>
         </div>
@@ -92,9 +102,7 @@
               class="custom-combobox"
               ref="cbbCountry"
               @changeValue="getProvince"
-              :items="this.listCountry"
-              :itemId="this.countryId"
-              :placeholder="this.placeholderCountry"
+              :items="listCountry"
             />
           </div>
         </div>
@@ -108,8 +116,6 @@
                 ref="cbbProvince"
                 @changeValue="getDistrict"
                 :items="this.listProvince"
-                :itemId="this.provinceId"
-                 :placeholder="this.placeholderProvince"
               />
             </div>
           </div>
@@ -119,10 +125,9 @@
               <ms-combobox
                 class="custom-combobox"
                 ref="cbbDistrict"
-                @changeValue="getWard"
                 :items="this.listDistrict"
-                :itemId="this.districtId"
-                 :placeholder="this.placeholderDistrict"
+                @changeValue="getWard"
+                @loadData="loadDistrict"
               />
             </div>
           </div>
@@ -137,16 +142,13 @@
                 ref="cbbWard"
                 @changeValue="confirmPosition"
                 :items="this.listWard"
-                :itemId="this.wardId"
-                 :placeholder="this.placeholderWard"
-                 :testValue="this.store.countryId"
               />
             </div>
           </div>
           <div class="ms-col">
             <div class="ms-row-text text-padding-10px">Đường phố</div>
             <div class="ms-form-text">
-                <input
+              <input
                 type="text"
                 class="ms-field-input"
                 v-model="store.street"
@@ -194,11 +196,12 @@ export default {
         address: '',
         phoneNumber: '',
         storeTaxCode: '',
-        provinceId: '00000000-0000-0000-0000-000000000000',
-        districtId: '00000000-0000-0000-0000-000000000000',
-        wardId: '00000000-0000-0000-0000-000000000000',
+        provinceId: '',
+        districtId: '',
+        wardId: '',
+        countryId: '',
         street: '',
-        status: 0,
+        status: 1,
         createdDate: '2017-08-15T13:32:46',
         createdBy: '',
         modifiedDate: '1970-01-01T01:45:10',
@@ -212,11 +215,11 @@ export default {
         address: '',
         phoneNumber: '',
         storeTaxCode: '',
-        provinceId: '00000000-0000-0000-0000-000000000000',
-        districtId: '00000000-0000-0000-0000-000000000000',
-        wardId: '00000000-0000-0000-0000-000000000000',
+        provinceId: '',
+        districtId: '',
+        wardId: '',
         street: '',
-        status: 0,
+        status: 1,
         createdDate: '2017-08-15T13:32:46',
         createdBy: '',
         modifiedDate: '1970-01-01T01:45:10',
@@ -227,20 +230,15 @@ export default {
       listDistrict: [],
       listProvince: [],
       listWard: [],
-      items: [],
-      isWarningCode: false,
-      isWarningAddress: false,
-      isWarningName: false,
-      editMode: 0,
-      countryId: '',
       provinceId: '',
       districtId: '',
       wardId: '',
+      countryId: '',
+      isWarningCode: false,
+      isWarningAddress: false,
+      isWarningName: false,
       error: false,
-      placeholderCountry: 'Nhập quốc gia',
-      placeholderProvince: 'Nhập tỉnh/thành phố',
-      placeholderDistrict: 'Nhập quận/huyện',
-      placeholderWard: 'Nhập xã phường'
+      storeMain: ''
     }
   },
   methods: {
@@ -253,28 +251,25 @@ export default {
       this.isWarningCode = false
       this.isWarningAddress = false
       this.isWarningName = false
-      this.$emit('closeDialog')
+      console.log('main 1 : ', this.storeMain)
+      this.$emit('closeDialog', this.storeMain)
     },
     /**
      * Hàm lấy toàn bộ danh sách quốc gia
      * CreatedBy: LVDat (16/06/2021)
      */
-    async loadCountry () {
-      const res = await this.axios.get('Country?pageIndex=1&pageSize=300')
-      const list = Object.assign(res.data.data)
-      // console.table(this.listCountry)
-      // console.table(JSON.parse(JSON.stringify(this.listCountry)))
-      list.forEach(element => {
-        this.listCountry.push({
-          value: element.countryId,
-          text: element.countryName
+    loadCountry () {
+      this.axios.get('Country?pageIndex=1&pageSize=100').then(response => {
+        response.data.data.forEach(element => {
+          this.listCountry.push({
+            value: element.countryId,
+            text: element.countryName
+          })
         })
+        this.$refs.cbbCountry.keyFilter = this.listCountry[0].text
+        this.$refs.cbbCountry.itemSelected = this.listCountry[0]
+        this.store.countryId = this.listCountry[0].value
       })
-      this.listCountry = JSON.parse(JSON.stringify(this.listCountry))
-      this.$refs.cbbCountry.keyFilter = ''
-      this.$refs.cbbProvince.keyFilter = ''
-      this.$refs.cbbDistrict.keyFilter = ''
-      this.$refs.cbbWard.keyFilter = ''
     },
 
     /**
@@ -282,31 +277,33 @@ export default {
      * CeatedBy: LVDat (16/06/2021)
      */
     getProvince (countryId) {
-      this.store.countryId = countryId
-      this.axios
-        .get('Provinces/get/byCountry?countryId=' + countryId)
-        .then(response => {
-          for (let index = 0; index < response.data.data.length; index++) {
-            var element = response.data.data[index]
-            this.listProvince.push({
-              value: element.provinceId,
-              text: element.provinceName
-            })
-          }
-          // this.$refs.cbbProvince.itemSelected = {}
-          // this.$refs.cbbProvince.keyFilter = ''
-          // this.$refs.cbbDistrict.keyFilter = ''
-          // this.$refs.cbbWard.keyFilter = ''
-        })
+      this.listProvince = []
+      this.axios.get('Provinces?pageIndex=1&pageSize=100').then(response => {
+        for (let index = 0; index < response.data.data.length; index++) {
+          var element = response.data.data[index]
+          this.listProvince.push({
+            value: element.provinceId,
+            text: element.provinceName
+          })
+          this.$refs.cbbProvince.keyFilter = ''
+          this.$refs.cbbDistrict.keyFilter = ''
+          this.$refs.cbbWard.keyFilter = ''
+        }
+      })
+
+      this.store.provinceId = ''
+      this.store.districtId = ''
+      this.store.wardId = ''
     },
     /**
      * Hàm lấy thông tin quận/huyện sau khi chọn tỉnh/thành phố
      * CeatedBy: LVDat (16/06/2021)
      */
     getDistrict (provinceId) {
-      this.store.provinceId = provinceId
+      this.listDistrict = []
+      this.provinceId = provinceId
       this.axios
-        .get('Districts/get/byProvince?provinceId=' + provinceId)
+        .get('Districts/get/byProvince?provinceId=' + this.provinceId)
         .then(response => {
           for (let index = 0; index < response.data.data.length; index++) {
             var element = response.data.data[index]
@@ -315,30 +312,34 @@ export default {
               text: element.districtName
             })
           }
-          // this.$refs.cbbDistrict.itemSelected = {}
-          // this.$refs.cbbDistrict.keyFilter = ''
-          // this.$refs.cbbWard.keyFilter = ''
+          this.$refs.cbbDistrict.keyFilter = ''
+          this.$refs.cbbWard.keyFilter = ''
         })
+      this.store.districtId = ''
+      this.store.wardId = ''
     },
     /**
      * Hàm lấy thông tin xã/phường sau khi chọn quận/huyện
      * CeatedBy: LVDat (16/06/2021)
      */
     getWard (districtId) {
+      this.listWard = []
       this.store.districtId = districtId
+      this.districtId = districtId
       this.axios
-        .get('Wards/get/byDistrict?districtId=' + districtId)
+        .get('Wards/get/byDistrict?districtId=' + this.districtId)
         .then(response => {
           for (let index = 0; index < response.data.data.length; index++) {
             var element = response.data.data[index]
-            this.$refs.cbbWard.items.push({
+            this.listWard.push({
               value: element.wardId,
               text: element.wardName
             })
           }
-          // this.$refs.cbbWard.itemSelected = {}
-          // this.$refs.cbbWard.keyFilter = ''
+          this.$refs.cbbWard.itemSelected = {}
+          this.$refs.cbbWard.keyFilter = ''
         })
+      this.store.wardId = null
     },
     confirmPosition (wardId) {
       this.store.wardId = wardId
@@ -361,17 +362,17 @@ export default {
       }
     },
     validateStoreName () {
-      if (!this.validateData(this.store.storeName)) {
-        this.isWarningName = true
+      if (this.validateData(this.store.storeName)) {
+        this.isWarningName = false
       } else {
-        this.isWarningname = false
+        this.isWarningName = true
       }
     },
     validateStoreAddress () {
-      if (!this.validateData(this.store.storeAddress)) {
-        this.isWarningAddress = true
-      } else {
+      if (this.validateData(this.store.address)) {
         this.isWarningAddress = false
+      } else {
+        this.isWarningAddress = true
       }
     },
     validateData (val) {
@@ -384,60 +385,108 @@ export default {
      * Hàm lưu dữ liệu
      */
     saveData () {
-      this.store.editMode = 1
-      this.store.status = 1
-      var listStore = []
-      listStore.push(this.store)
-      this.axios.post('Stores', listStore).then(response => {
-        if (response.data.success === true) {
-          this.$vToastify.success(response.data.message)
-          this.closeDialog()
-          this.$emit('loadStore')
-        } else {
-          this.$vToastify.error(response.data.message)
-          const listFieldNotValid = response.data.fieldNotValids
-          listFieldNotValid.forEach(element => {
-            this.$vToastify.error(element.msg)
-          })
-        }
-      })
+      this.validateStoreCode()
+      this.validateStoreName()
+      this.validateStoreAddress()
+
+      if (
+        !this.isWarningCode &&
+        !this.isWarningName &&
+        !this.isWarningAddress
+      ) {
+        this.store.provinceId = this.store.provinceId || null
+        this.store.districtId = this.store.districtId || null
+        this.store.wardId = this.store.wardId || null
+        this.store.editMode = this.editMode
+        var listStore = []
+        listStore.push(this.store)
+        this.axios.post('Stores', listStore).then(response => {
+          if (response.data.success === true) {
+            this.$vToastify.success(response.data.message)
+            this.closeDialog()
+            this.$emit('loadStore')
+          } else {
+            this.$emit('displayPopupError')
+          }
+        })
+      }
     },
+
     editStore (store) {
       this.store = store
-      this.countryId = store.countryId
-      this.provinceId = store.provinceId
-      this.districtId = store.districtId
-      this.wardId = store.wardId
-      setTimeout(() => {
+      this.storeMain = store
+      console.log('main 2 : ', this.storeMain)
+      this.countryId = this.store.countryId
+      this.provinceId = this.store.provinceId
+      this.districtId = this.store.districtId
+      this.wardId = this.store.wardId
+      if (this.countryId !== null) {
         this.loadCountry()
+        this.getProvince(this.countryId)
+        if (this.provinceId !== null) {
+          this.getDistrict(this.provinceId)
+          if (this.districtId !== null) {
+            this.getWard(this.districtId)
+          }
+        }
+      }
+
+      setTimeout(() => {
+        this.getProvinceById()
+        this.getDistrictById()
+        this.getWardById()
       }, 300)
-      this.getProvince(store.countryId)
-      this.getDistrict(store.provinceId)
-      this.getWard(store.districtId)
-      this.getCoutryById()
-      this.getProvinceById()
-      // this.listCountry.forEach(e => {
-      //   if (e.value === this.store.countryId) {
-      //     this.$refs.cbbCountry.keyFilter = e.text
-      //   }
-      // })
     },
     /**
-     * Hàm lấy thông tin quốc gia theo mã
+     * Hàm lấy thông tin tỉnh/thành phố theo mã tỉnh/thành phố
      */
-    getCoutryById () {
-      this.axios.get('Country/' + this.store.countryId).then(response => {
-        this.$refs.cbbCountry.keyFilter = response.data.data[0].countryName
-        this.$refs.cbbCountry.itemSelected.text = response.data.data[0].countryName
-        this.$refs.cbbCountry.itemSelected.value = response.data.data[0].countryId
-      })
-    },
     getProvinceById () {
       this.axios.get('Provinces/' + this.store.provinceId).then(response => {
         this.$refs.cbbProvince.keyFilter = response.data.data[0].provinceName
-        this.$refs.cbbProvince.itemSelected.text = response.data.data[0].provinceName
-        this.$refs.cbbProvince.itemSelected.value = response.data.data[0].provinceId
+        this.$refs.cbbProvince.itemSelected.text =
+          response.data.data[0].provinceName
+        this.$refs.cbbProvince.itemSelected.value =
+          response.data.data[0].provinceId
       })
+    },
+    /**
+     * Lấy thông tin quận huyện theo mã quận/huyện
+     */
+    getDistrictById () {
+      this.axios.get('Districts/' + this.store.districtId).then(response => {
+        this.$refs.cbbDistrict.keyFilter = response.data.data[0].districtName
+        this.$refs.cbbDistrict.itemSelected.text =
+          response.data.data[0].districtName
+        this.$refs.cbbDistrict.itemSelected.value =
+          response.data.data[0].districtId
+      })
+    },
+    getWardById () {
+      if (this.wardId !== null) {
+        this.axios.get('Wards/' + this.wardId).then(response => {
+          this.$refs.cbbWard.keyFilter = response.data.data[0].wardName
+          this.$refs.cbbWard.itemSelected.text = response.data.data[0].wardName
+          this.$refs.cbbWard.itemSelected.value = response.data.data[0].wardId
+        })
+      }
+    }
+  },
+  computed: {
+    editModeTitle () {
+      if (this.editMode === 1) {
+        return 'Thêm mới cửa hàng'
+      } else return 'Sửa cửa hàng'
+    }
+  },
+  props: {
+    editMode: {
+      type: Number,
+      default: 1
+    }
+  },
+  watch: {
+    storeMain: function () {
+      console.log('da thay doi', this.storeMain)
     }
   }
 }

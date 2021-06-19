@@ -11,7 +11,11 @@ import msDialog from '@/components/msDialog/msDialog.vue'
 import msNavigate from '@/components/msNavigate/msNavigate.vue'
 import msPopupDelete from '@/components/msPopupDelete/msPopupDelete.vue'
 import msPopupSave from '@/components/msPopupSave/msPopupSave.vue'
+import msPopupError from '@/components/msPopupError/msPopupError.vue'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import VueResizable from 'vue-resizable'
+Vue.component(VueResizable)
+Vue.component(msPopupError.name, msPopupError)
 Vue.component(PulseLoader)
 Vue.component(msPopupSave.name, msPopupSave)
 Vue.component(msPopupDelete.name, msPopupDelete)

@@ -33,7 +33,7 @@ export default {
   },
   data () {
     return {
-      store: ''
+      store: '1221323'
     }
   },
   methods: {
@@ -41,16 +41,17 @@ export default {
        * Hàm gọi tới api xoá store
        * CreatedBy: LVDat (16/6/2021)
        */
-    deleteStore (store) {
-      this.storeId = store.storeCode
+    deleteStore () {
       var tmp = []
-      store.editMode = 4
-      tmp.push(store)
+      this.store.editMode = 4
+      tmp.push(this.store)
+      console.log('xoas')
       this.axios.post('Stores', tmp).then(response => {
         // Gọi component cha load dữ liệu
         this.$emit('loadStore')
         // Gọi component cha đóng popup
         this.$emit('closePopupDelete')
+        console.log('xoas')
       })
     },
     /**
