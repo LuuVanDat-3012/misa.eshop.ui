@@ -84,7 +84,9 @@
             <div class="ms-grid-title">
               <span>Trạng thái</span>
             </div>
-            <div class="ms-filter"></div>
+            <div class="ms-filter">
+              <ms-combobox class="ms-cbb-filter" :items="this.items" ref=""/>
+            </div>
           </th>
         </tr>
       </thead>
@@ -109,7 +111,7 @@
       <div class="ms-btn-page-common" @click="backtoFirstPage">
         <div class="ms-first-page-icon ms-icon-common"></div>
       </div>
-      <div class="ms-btn-page-common">
+      <div class="ms-btn-page-common" @click="prePage">
         <div class="ms-pre-page-icon ms-icon-common"></div>
       </div>
       <div class="ms-page-text">Trang {{ curentPage }}</div>
@@ -124,7 +126,7 @@
         <div class="ms-last-page-icon ms-icon-common"></div>
       </div>
       <div class="ms-btn-page-common boder-blue">
-        <div class="ms-reload-icon ms-icon-common "></div>
+        <div class="ms-reload-icon ms-icon-common" @click="loadStoreDefault"></div>
       </div>
       <div class="ms-select-pagesize">
         <select name="" id="" v-model="pageSize">
@@ -135,7 +137,7 @@
         </select>
       </div>
 
-      <div class="ms-paging-detail"></div>
+      <div class="ms-paging-detail">Hiện thị {{(pageIndex-1)*pageSize+ 1}} - {{maxSize}} trên {{totalRecord}} bản ghi</div>
     </div>
   </div>
 </template>
@@ -161,10 +163,29 @@ export default {
       pageIndex: 1,
       totalPage: 1,
       curentPage: 1,
+      totalRecord: 0,
       statusSortCode: true,
       statusSortName: true,
       statusSortAddress: true,
-      statusSortPhone: true
+      statusSortPhone: true,
+      items: [
+        { value: 2, text: 'Tất cả' },
+        { value: 1, text: 'Đang hoạt động' },
+        { value: 0, text: 'Ngưng hoạt động' }
+      ],
+      objectFilter: {
+        filterCode: '',
+        filterName: '',
+        filterAddress: '',
+        filterPhone: '',
+        filterStatus: 2,
+        optionCode: 1,
+        optionName: 1,
+        optionAddress: 1,
+        optionPhone: 1,
+        pageIndex: 1,
+        pageSize: 15
+      }
     }
   },
   methods: {
@@ -182,15 +203,19 @@ export default {
      */
     loadStoreDefault () {
       this.isLoading = true
+      this.pageIndex = 1
+      this.pageSize = 15
       this.axios
-        .get('Stores/filter?&pageIndex=' + 1 + '&pageSize=' + this.pageSize)
+        .get('Stores/filter?storeCode=&storeName=&address=&phoneNumber=&status=1&pageIndex=1&pageSize=15')
         .then(response => {
           this.listStore = response.data.data
           this.sizeGrid = response.data.data * 31.4 + 64
           this.isLoading = false
           this.totalPage = response.data.totalPage
+          this.totalRecord = response.data.totalRecord
           if (response.data.data.length > 0) {
             this.storeSelected = response.data.data[0]
+            this.$emit('getStoreSelected', this.storeSelected)
           }
         })
     },
@@ -226,6 +251,7 @@ export default {
           this.sizeGrid = response.data.data.length * 31.4 + 64
           this.isLoading = false
           this.totalPage = response.data.totalPage
+          this.totalRecord = response.data.totalRecord
           if (response.data.data.length > 0) {
             this.storeSelected = response.data.data[0]
           }
@@ -374,7 +400,15 @@ export default {
     },
     backtoFirstPage () {
       this.pageIndex = 1
+      this.curentPage = this.pageIndex
       this.searchWithFilter()
+    },
+    prePage () {
+      if (this.pageIndex > 1) {
+        this.pageIndex--
+        this.curentPage = this.pageIndex
+        this.searchWithFilter()
+      }
     }
   },
 
@@ -391,6 +425,7 @@ export default {
         this.sizeGrid = response.data.data * 31.4 + 64
         this.isLoading = false
         this.totalPage = response.data.totalPage
+        this.totalRecord = response.data.totalRecord
         if (response.data.data.length > 0) {
           this.storeSelected = response.data.data[0]
           this.$emit('getStoreSelected', this.storeSelected)
@@ -402,6 +437,12 @@ export default {
       this.pageIndex = 1
       this.curentPage = 1
       this.searchWithFilter()
+    }
+  },
+  computed: {
+    maxSize: function () {
+      if (this.pageIndex * this.pageSize > this.totalRecord) { return this.totalRecord }
+      return this.pageIndex * this.pageSize
     }
   }
 }

@@ -15,13 +15,14 @@
     background-color: #ffffff;
     z-index: 99999999099999999;
     position: absolute;
-    left: calc(50% - 200px);
+    left: calc(50% - 300px);
     top: calc(50% - 126px);
     animation: 0.5s forwards;
     display: flex;
     flex-direction: column;
     border-radius: 3px;
     border: 1px solid #dfdfdf;
+    animation: animationDisplay 0.5s forwards;
 }
 
 
@@ -73,7 +74,6 @@ CSS content popup
 }
 
 .content-icon {
-    border-radius: 50%;
     background: url('../../assets/icon/icon-popup.png') no-repeat -169px -3px;
     width: 44px;
     height: 44px;
@@ -101,7 +101,6 @@ CSS buttons
     padding: 8px 0px 8px 6px;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
     align-items: center;
     background-color: #ffffff;
     border-top: 1px solid #dfdfdf;
@@ -165,8 +164,14 @@ CSS buttons
             padding: 0px 5px;
         }
     }
+      .ms-btn-dont-save:hover{
+        color: #6b6f9d;
+        cursor: pointer;
+    }
     //CSS button "Hủy"
-    .ms-btn-cancel {
+    .ms-btn-popup-cancel {
+        height: 32px;
+        width: 64.75px;
         font-size: 12px;
         font-weight: 600;
         color: #2b3173;
@@ -174,6 +179,7 @@ CSS buttons
         display: flex;
         align-items: center;
         position: absolute;
+        box-sizing: border-box;
         right: 10px;
         .ms-btn-cancel-icon {
             background-position: -1104px -130px;
@@ -181,8 +187,11 @@ CSS buttons
             height: 11px;
             margin-right: 3px;
         }
-        .ms-btn-cancel-text {
+        .ms-btn-cancel-popup-text {
             padding: 0px 5px;
         }
+    }
+    .ms-btn-popup-cancel:hover{
+        cursor: pointer;
     }
 }

@@ -21,8 +21,8 @@
         class="option"
         v-for="(item, index) in listItemInFilter"
         :key="index"
-        :class="item.value == itemSelected.value ? 'isselected' : ''"
-        @click="enter(index, item.value, item.text)"
+        :class="{isHover : index == indexSelected , isSelect: item.value == itemSelected.value}"
+        @click="chooseItem(index, item)"
       >
         {{ item.text }}
       </div>
@@ -70,7 +70,6 @@ export default {
         this.keyFilter.charAt(0).toUpperCase() + this.keyFilter.slice(1)
       this.items.forEach(element => {
         if (element.text.indexOf(this.keyFilter) !== -1) {
-          // console.log('vao roi ne')
           this.listItemInFilter.push({
             value: element.value,
             text: element.text
@@ -94,7 +93,7 @@ export default {
         this.indexHover--
       }
     },
-    enter (index, val, text) {
+    chooseItem (index, item) {
       if (index != null) {
         this.itemSelected = this.listItemInFilter[index]
         this.indexHover = index
@@ -106,11 +105,18 @@ export default {
           this.isActived = false
         }
       }
-      this.itemSelected.value = val
-      this.itemSelected.text = text
+      this.itemSelected = item
       this.keyFilter = this.itemSelected.text
       this.listItemInFilter = []
       this.listItemInFilter = this.items
+      this.$emit('changeValue', this.itemSelected.value)
+    },
+    enter () {
+      this.itemSelected = this.listItemInFilter[this.indexSelected]
+      this.keyFilter = this.itemSelected.text
+      this.listItemInFilter = []
+      this.listItemInFilter = this.items
+      this.isActived = false
       this.$emit('changeValue', this.itemSelected.value)
     },
     setIndexSelected () {
@@ -137,6 +143,6 @@ export default {
   }
 }
 </script>
-<style lang="sass" scoped>
+<style lang="sass">
 @import '../../scss/msCombobox.scss'
 </style>

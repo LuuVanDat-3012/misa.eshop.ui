@@ -4,7 +4,7 @@
       <div class="btn-insert-icon ms-icon-common"></div>
       <div class="btn-insert-text text-common">Thêm mới</div>
     </div>
-    <div class="ms-btn-duplication ms-btn-common">
+    <div class="ms-btn-duplication ms-btn-common" @click="duplicateStore">
       <div class="btn-duplication-icon  ms-icon-common"></div>
       <div class="btn-duplication-text text-common">Nhân bản</div>
     </div>
@@ -48,6 +48,9 @@ export default {
     },
     editStore () {
       this.$emit('editStore')
+    },
+    duplicateStore () {
+      this.$emit('duplicateStore')
     }
   }
 }

@@ -43,6 +43,7 @@
               v-model="store.storeName"
               @keyup="validateStoreName"
               @keydown.tab="validateStoreName"
+              ref="inputStoreName"
             />
             <div
               class="ms-icon-error icon-error-special"
@@ -67,6 +68,7 @@
               @keyup="validateStoreAddress"
               @keydown.tab="validateStoreAddress"
               v-model="store.address"
+              ref="inputStoreAddress"
             ></textarea>
           </div>
           <div class="ms-icon-error" v-if="isWarningAddress"></div>
@@ -127,7 +129,6 @@
                 ref="cbbDistrict"
                 :items="this.listDistrict"
                 @changeValue="getWard"
-                @loadData="loadDistrict"
               />
             </div>
           </div>
@@ -167,15 +168,15 @@
           </div>
         </div>
         <div class="ms-footer-right">
-          <div class="ms-btn-save ms-footer-btn-common" @click="saveData">
+          <div class="ms-btn-save ms-footer-btn-common" @click="saveData(0)">
             <div class="ms-icon-common ms-btn-save-icon"></div>
             <div class="ms-btn-save-text">Lưu</div>
           </div>
-          <div class="ms-btn-build ms-footer-btn-common">
+          <div class="ms-btn-build ms-footer-btn-common" @click="saveData(1)">
             <div class="ms-btn-build-icon ms-icon-common"></div>
             <div class="ms-btn-build-text">Lưu và thêm mới</div>
           </div>
-          <div class="ms-btn-cancel ms-footer-btn-common" @click="closeDialog">
+          <div class="ms-btn-cancel ms-footer-btn-common" @click="exitDialog">
             <div class="ms-btn-cancel-icon ms-icon-common"></div>
             <div class="ms-btn-cancel-text">Hủy bỏ</div>
           </div>
@@ -208,7 +209,7 @@ export default {
         modifiedBy: '',
         editMode: 0
       },
-      storeFake: {
+      storeDefault: {
         storeId: '00000000-0000-0000-0000-000000000000',
         storeCode: '',
         storeName: '',
@@ -238,12 +239,15 @@ export default {
       isWarningAddress: false,
       isWarningName: false,
       error: false,
-      storeMain: ''
+      temp: {}
     }
   },
   methods: {
     closeDialog () {
-      this.store = this.storeFake
+      this.$emit('displayPopupSave', this.store)
+    },
+    exitDialog () {
+      this.store = this.storeDefault
       this.listCountry = []
       this.listDistrict = []
       this.listProvince = []
@@ -251,14 +255,13 @@ export default {
       this.isWarningCode = false
       this.isWarningAddress = false
       this.isWarningName = false
-      console.log('main 1 : ', this.storeMain)
-      this.$emit('closeDialog', this.storeMain)
+      this.$emit('closeDialog')
     },
     /**
      * Hàm lấy toàn bộ danh sách quốc gia
      * CreatedBy: LVDat (16/06/2021)
      */
-    loadCountry () {
+    getCountry () {
       this.axios.get('Country?pageIndex=1&pageSize=100').then(response => {
         response.data.data.forEach(element => {
           this.listCountry.push({
@@ -290,10 +293,6 @@ export default {
           this.$refs.cbbWard.keyFilter = ''
         }
       })
-
-      this.store.provinceId = ''
-      this.store.districtId = ''
-      this.store.wardId = ''
     },
     /**
      * Hàm lấy thông tin quận/huyện sau khi chọn tỉnh/thành phố
@@ -312,11 +311,13 @@ export default {
               text: element.districtName
             })
           }
+          if (this.listDistrict.length === 0) {
+            this.districtId = null
+            this.wardId = null
+          }
           this.$refs.cbbDistrict.keyFilter = ''
           this.$refs.cbbWard.keyFilter = ''
         })
-      this.store.districtId = ''
-      this.store.wardId = ''
     },
     /**
      * Hàm lấy thông tin xã/phường sau khi chọn quận/huyện
@@ -336,12 +337,15 @@ export default {
               text: element.wardName
             })
           }
+          if (this.listWard.length === 0) {
+            this.wardId = null
+          }
           this.$refs.cbbWard.itemSelected = {}
           this.$refs.cbbWard.keyFilter = ''
         })
-      this.store.wardId = null
     },
     confirmPosition (wardId) {
+      this.wardId = wardId
       this.store.wardId = wardId
     },
     /**
@@ -383,28 +387,43 @@ export default {
     },
     /**
      * Hàm lưu dữ liệu
+     * CreatedBy: LVDat (19/06/2021)
      */
-    saveData () {
+    saveData (key) {
+      // Validate 1 dữ liệu
       this.validateStoreCode()
       this.validateStoreName()
       this.validateStoreAddress()
-
-      if (
-        !this.isWarningCode &&
-        !this.isWarningName &&
-        !this.isWarningAddress
-      ) {
-        this.store.provinceId = this.store.provinceId || null
-        this.store.districtId = this.store.districtId || null
-        this.store.wardId = this.store.wardId || null
+      // Focus vào ô input lỗi
+      if (this.isWarningCode) {
+        this.focusInput()
+      } else if (this.isWarningName) {
+        this.$refs.inputStoreName.focus()
+      } else if (this.isWarningAddress) {
+        this.$refs.inputStoreAddress.focus()
+      } else {
+        // Gán lại dữ liệu và thêm
+        this.store.provinceId = this.provinceId || null
+        this.store.districtId = this.districtId || null
+        this.store.wardId = this.wardId || null
+        if (this.$refs.cbbProvince.keyFilter === '') {
+          this.store.provinceId = null
+        }
+        if (this.$refs.cbbDistrict.keyFilter === '') {
+          this.store.districtId = null
+        }
+        if (this.$refs.cbbWard.keyFilter === '') {
+          this.store.wardId = null
+        }
         this.store.editMode = this.editMode
         var listStore = []
         listStore.push(this.store)
+        // Gửi request lên server
         this.axios.post('Stores', listStore).then(response => {
           if (response.data.success === true) {
             this.$vToastify.success(response.data.message)
-            this.closeDialog()
             this.$emit('loadStore')
+            this.exitDialog()
           } else {
             this.$emit('displayPopupError')
           }
@@ -414,55 +433,59 @@ export default {
 
     editStore (store) {
       this.store = store
-      this.storeMain = store
-      console.log('main 2 : ', this.storeMain)
       this.countryId = this.store.countryId
       this.provinceId = this.store.provinceId
       this.districtId = this.store.districtId
       this.wardId = this.store.wardId
       if (this.countryId !== null) {
-        this.loadCountry()
+        this.getCountry()
         this.getProvince(this.countryId)
         if (this.provinceId !== null) {
           this.getDistrict(this.provinceId)
           if (this.districtId !== null) {
             this.getWard(this.districtId)
+            this.confirmPosition(this.wardId)
           }
         }
       }
+      this.store.provinceId = this.provinceId
 
       setTimeout(() => {
         this.getProvinceById()
         this.getDistrictById()
         this.getWardById()
-      }, 300)
+      }, 100)
     },
     /**
      * Hàm lấy thông tin tỉnh/thành phố theo mã tỉnh/thành phố
      */
     getProvinceById () {
-      this.axios.get('Provinces/' + this.store.provinceId).then(response => {
-        this.$refs.cbbProvince.keyFilter = response.data.data[0].provinceName
-        this.$refs.cbbProvince.itemSelected.text =
-          response.data.data[0].provinceName
-        this.$refs.cbbProvince.itemSelected.value =
-          response.data.data[0].provinceId
-      })
+      if (this.provinceId !== null && this.provinceId !== '') {
+        this.axios.get('Provinces/' + this.provinceId).then(response => {
+          this.$refs.cbbProvince.keyFilter = response.data.data[0].provinceName
+          this.$refs.cbbProvince.itemSelected.text =
+            response.data.data[0].provinceName
+          this.$refs.cbbProvince.itemSelected.value =
+            response.data.data[0].provinceId
+        })
+      }
     },
     /**
      * Lấy thông tin quận huyện theo mã quận/huyện
      */
     getDistrictById () {
-      this.axios.get('Districts/' + this.store.districtId).then(response => {
-        this.$refs.cbbDistrict.keyFilter = response.data.data[0].districtName
-        this.$refs.cbbDistrict.itemSelected.text =
-          response.data.data[0].districtName
-        this.$refs.cbbDistrict.itemSelected.value =
-          response.data.data[0].districtId
-      })
+      if (this.districtId !== null && this.districtId !== '') {
+        this.axios.get('Districts/' + this.districtId).then(response => {
+          this.$refs.cbbDistrict.keyFilter = response.data.data[0].districtName
+          this.$refs.cbbDistrict.itemSelected.text =
+            response.data.data[0].districtName
+          this.$refs.cbbDistrict.itemSelected.value =
+            response.data.data[0].districtId
+        })
+      }
     },
     getWardById () {
-      if (this.wardId !== null) {
+      if (this.wardId !== null && this.wardId !== '') {
         this.axios.get('Wards/' + this.wardId).then(response => {
           this.$refs.cbbWard.keyFilter = response.data.data[0].wardName
           this.$refs.cbbWard.itemSelected.text = response.data.data[0].wardName
@@ -485,9 +508,12 @@ export default {
     }
   },
   watch: {
-    storeMain: function () {
-      console.log('da thay doi', this.storeMain)
-    }
+    // storeMain: function () {
+    //   console.log('Main da thay doi', this.storeMain.storeCode)
+    // },
+    // store: function () {
+    //   console.log('Regular da thay doi', this.store.storeCode)
+    // }
   }
 }
 </script>

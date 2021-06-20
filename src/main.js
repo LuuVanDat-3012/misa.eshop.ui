@@ -12,7 +12,8 @@ import VueToastify from 'vue-toastify'
 Vue.use(VueToastify, {
   singular: true,
   position: 'top-right',
-  theme: 'light'
+  theme: 'light',
+  defaultTitle: true
 })
 
 Vue.use(VueColumnsResizable)
