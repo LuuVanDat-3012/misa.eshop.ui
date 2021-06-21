@@ -36,14 +36,14 @@
     transform-origin: 0 0;
     width: 178px;
     animation: 0.4s dropdown-menu forwards;
-    border-radius: 5px;
+    border-radius: 3px;
     box-shadow: 1px 1px #bbbbbb;
     z-index: 9999999999999;
     margin-top: 4px;
     box-sizing: border-box;
     margin-left: -2px;
     max-height: 200px;
-    overflow-y: scroll;
+    overflow-y: auto;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
@@ -68,7 +68,8 @@
     background-color: #6b6f9d !important;
     color: #ffffff;
 }
-.isHover{
+
+.isHover {
     background-color: #6b6f9d !important;
     color: #ffffff;
 }

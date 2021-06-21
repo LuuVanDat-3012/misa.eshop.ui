@@ -2,7 +2,7 @@
   <div class="ms-dialog">
     <div class="ms-dialog-model"></div>
 
-    <div class="ms-dialog-main">
+    <div class="ms-dialog-main" :class="{ msDialogEdit: editMode === 2 }">
       <div class="ms-dialog-header">
         <div class="ms-header-title">{{ editModeTitle }}</div>
         <div class="ms-icon-close" @click="closeDialog"></div>
@@ -14,7 +14,7 @@
             Mã cửa hàng <span class="ms-field-requied">*</span>
           </div>
           <div
-            class="ms-form-text "
+            class="ms-form-text"
             :class="{ error: isWarningCode, zoomOut: isWarningCode }"
           >
             <input
@@ -30,7 +30,7 @@
         </div>
 
         <div class="ms-row">
-          <div class="ms-row-text ">
+          <div class="ms-row-text">
             Tên cửa hàng <span class="ms-field-requied">*</span>
           </div>
           <div
@@ -105,6 +105,7 @@
               ref="cbbCountry"
               @changeValue="getProvince"
               :items="listCountry"
+              @closeOtherComboboxs="closeWithoutCountry"
             />
           </div>
         </div>
@@ -118,6 +119,7 @@
                 ref="cbbProvince"
                 @changeValue="getDistrict"
                 :items="this.listProvince"
+                @closeOtherComboboxs="closeWithoutProvince"
               />
             </div>
           </div>
@@ -129,6 +131,7 @@
                 ref="cbbDistrict"
                 :items="this.listDistrict"
                 @changeValue="getWard"
+                @closeOtherComboboxs="closeWithoutDistrict"
               />
             </div>
           </div>
@@ -155,6 +158,23 @@
                 v-model="store.street"
               />
             </div>
+          </div>
+        </div>
+
+        <div class="ms-row ms-checkbox" v-if="editMode === 2">
+          <div class="ms-row-text">
+            <span class="ms-field-requied"></span>
+          </div>
+          <div class="ms-checkbox-status">
+            <div
+              :class="
+                store.status === 0
+                  ? 'ms-checkbox-icon-checked'
+                  : 'ms-checkbox-icon-unchecked'
+              "
+              @click="selectStoreStatus"
+            ></div>
+            <div class="ms-checkbox-title">Ngưng hoạt động</div>
           </div>
         </div>
       </div>
@@ -243,9 +263,48 @@ export default {
     }
   },
   methods: {
+    /**
+     * Đóng dialog
+     * Check sự thay đổi của giá trị
+     * CreatedBy: LVDat (19/06/2021)
+     */
     closeDialog () {
-      this.$emit('displayPopupSave', this.store)
+      this.store.provinceId = this.provinceId || null
+      this.store.districtId = this.districtId || null
+      this.store.wardId = this.wardId || null
+      if (this.editMode === 1) {
+        this.exitDialog()
+      } else {
+        this.$emit('displayPopupSave', this.store)
+      }
     },
+    /**
+     * Đóng các cbb khác
+     * CreatedBy: LVDat(19/06/2-21)
+     */
+    closeWithoutCountry () {
+      this.$refs.cbbWard.isActived = false
+      this.$refs.cbbProvince.isActived = false
+      this.$refs.cbbDistrict.isActived = false
+    },
+    closeWithoutProvince () {
+      this.$refs.cbbWard.isActived = false
+      this.$refs.cbbDistrict.isActived = false
+    },
+    closeWithoutDistrict () {
+      this.$refs.cbbWard.isActived = false
+    },
+    /**
+     * Hàm chọn trạng thái cửa hàng
+     * CreatedBy: LVDat(19/06/2021)
+     */
+    selectStoreStatus () {
+      if (this.store.status === 0) { this.store.status = 1 } else { this.store.status = 0 }
+    },
+    /**
+     * Đóng dialog khi click button "Hủy bỏ"
+     * CreatedBy: LVDat(19/06/2021)
+     */
     exitDialog () {
       this.store = this.storeDefault
       this.listCountry = []
@@ -262,8 +321,9 @@ export default {
      * CreatedBy: LVDat (16/06/2021)
      */
     getCountry () {
-      this.axios.get('Country?pageIndex=1&pageSize=100').then(response => {
-        response.data.data.forEach(element => {
+      this.listProvince = []
+      this.axios.get('Country?pageIndex=1&pageSize=100').then((response) => {
+        response.data.data.forEach((element) => {
           this.listCountry.push({
             value: element.countryId,
             text: element.countryName
@@ -281,7 +341,7 @@ export default {
      */
     getProvince (countryId) {
       this.listProvince = []
-      this.axios.get('Provinces?pageIndex=1&pageSize=100').then(response => {
+      this.axios.get('Provinces?pageIndex=1&pageSize=100').then((response) => {
         for (let index = 0; index < response.data.data.length; index++) {
           var element = response.data.data[index]
           this.listProvince.push({
@@ -303,7 +363,7 @@ export default {
       this.provinceId = provinceId
       this.axios
         .get('Districts/get/byProvince?provinceId=' + this.provinceId)
-        .then(response => {
+        .then((response) => {
           for (let index = 0; index < response.data.data.length; index++) {
             var element = response.data.data[index]
             this.listDistrict.push({
@@ -329,7 +389,7 @@ export default {
       this.districtId = districtId
       this.axios
         .get('Wards/get/byDistrict?districtId=' + this.districtId)
-        .then(response => {
+        .then((response) => {
           for (let index = 0; index < response.data.data.length; index++) {
             var element = response.data.data[index]
             this.listWard.push({
@@ -357,7 +417,10 @@ export default {
         this.$refs.autofocus.focus()
       }, 10)
     },
-
+    /**
+     * Hàm validate giá trị storeCode
+     * CreatedBy: LVDat (15/06/2021)
+     */
     validateStoreCode () {
       if (this.validateData(this.store.storeCode)) {
         this.isWarningCode = false
@@ -365,6 +428,10 @@ export default {
         this.isWarningCode = true
       }
     },
+    /**
+     * Hàm validate giá trị storeName
+     * CreatedBy: LVDat (15/06/2021)
+     */
     validateStoreName () {
       if (this.validateData(this.store.storeName)) {
         this.isWarningName = false
@@ -372,6 +439,10 @@ export default {
         this.isWarningName = true
       }
     },
+    /**
+     * Hàm validate giá trị storeAddress
+     * CreatedBy: LVDat (15/06/2021)
+     */
     validateStoreAddress () {
       if (this.validateData(this.store.address)) {
         this.isWarningAddress = false
@@ -379,6 +450,10 @@ export default {
         this.isWarningAddress = true
       }
     },
+    /**
+     * Hàm validate chung
+     * CreatedBy: LVDat (15/06/2021)
+     */
     validateData (val) {
       if (typeof val === 'undefined' || val === null || val === '') {
         return false
@@ -419,7 +494,7 @@ export default {
         var listStore = []
         listStore.push(this.store)
         // Gửi request lên server
-        this.axios.post('Stores', listStore).then(response => {
+        this.axios.post('Stores', listStore).then((response) => {
           if (response.data.success === true) {
             this.$vToastify.success(response.data.message)
             this.$emit('loadStore')
@@ -430,7 +505,10 @@ export default {
         })
       }
     },
-
+    /**
+     * Hàm load thông tin: Quốc gia, tỉnh/thành phố, quận/huyện, xã/phường
+     * CreatedBy: LVDat (19/06/2021)
+     */
     editStore (store) {
       this.store = store
       this.countryId = this.store.countryId
@@ -454,14 +532,15 @@ export default {
         this.getProvinceById()
         this.getDistrictById()
         this.getWardById()
-      }, 100)
+      }, 10)
     },
     /**
      * Hàm lấy thông tin tỉnh/thành phố theo mã tỉnh/thành phố
+     * CreatedBy: LVDat (19/06/2021)
      */
     getProvinceById () {
       if (this.provinceId !== null && this.provinceId !== '') {
-        this.axios.get('Provinces/' + this.provinceId).then(response => {
+        this.axios.get('Provinces/' + this.provinceId).then((response) => {
           this.$refs.cbbProvince.keyFilter = response.data.data[0].provinceName
           this.$refs.cbbProvince.itemSelected.text =
             response.data.data[0].provinceName
@@ -472,10 +551,11 @@ export default {
     },
     /**
      * Lấy thông tin quận huyện theo mã quận/huyện
+     * CreatedBy: LVDat (19/06/2021)
      */
     getDistrictById () {
       if (this.districtId !== null && this.districtId !== '') {
-        this.axios.get('Districts/' + this.districtId).then(response => {
+        this.axios.get('Districts/' + this.districtId).then((response) => {
           this.$refs.cbbDistrict.keyFilter = response.data.data[0].districtName
           this.$refs.cbbDistrict.itemSelected.text =
             response.data.data[0].districtName
@@ -484,9 +564,13 @@ export default {
         })
       }
     },
+    /**
+     * Lấy thông tin xã/phường theo mã quận/huyện
+     * CreatedBy: LVDat (19/06/2021)
+     */
     getWardById () {
       if (this.wardId !== null && this.wardId !== '') {
-        this.axios.get('Wards/' + this.wardId).then(response => {
+        this.axios.get('Wards/' + this.wardId).then((response) => {
           this.$refs.cbbWard.keyFilter = response.data.data[0].wardName
           this.$refs.cbbWard.itemSelected.text = response.data.data[0].wardName
           this.$refs.cbbWard.itemSelected.value = response.data.data[0].wardId
@@ -495,6 +579,12 @@ export default {
     }
   },
   computed: {
+    /**
+     * Kiểm tra trạng thái của đối tượng
+     * 1: Thêm
+     * 2: Sửa
+     * CreatedBy: LVDat (15/06/2021)
+     */
     editModeTitle () {
       if (this.editMode === 1) {
         return 'Thêm mới cửa hàng'
