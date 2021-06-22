@@ -158,6 +158,7 @@
   </div>
 </template>
 <script>
+import { TypeStatus } from '../../constant/types'
 export default {
   name: 'msGrid',
   components: {
@@ -179,9 +180,7 @@ export default {
       statusSortAddress: true,
       statusSortPhone: true,
       items: [
-        { value: 2, text: 'Tất cả' },
-        { value: 1, text: 'Đang hoạt động' },
-        { value: 0, text: 'Ngừng hoạt động' }
+
       ],
       objectFilter: {
         filterCode: '',
@@ -269,7 +268,6 @@ export default {
       this.objectFilter.optionAddress = this.$refs.optionAddress.optionSelected.value
       this.objectFilter.optionPhone = this.$refs.optionPhone.optionSelected.value
       this.objectFilter.filterStatus = this.$refs.cbbFilter.itemSelected.value
-      console.log(JSON.stringify(this.objectFilter))
       this.axios
         .post(
           'Stores/Filter', this.objectFilter
@@ -448,6 +446,7 @@ export default {
    */
   mounted () {
     this.isLoading = true
+    this.items = TypeStatus
     this.$refs.cbbFilter.itemSelected = this.items[0]
     this.$refs.cbbFilter.keyFilter = this.items[0].text
     this.axios

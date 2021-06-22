@@ -110,7 +110,7 @@
         color: #ff0000;
     }
     .ms-row-text {
-        width: 6.25rem;
+        width: 6.5rem;
         height: 2rem;
         padding: 0.5rem 0.3125rem 0rem 0rem;
         box-sizing: border-box;
@@ -147,6 +147,7 @@
         .ms-combobox {
             width: 11rem;
             height: 2rem;
+            border-radius: 2px;
         }
         .ms-combobox {
             .ms-input-cbb {
@@ -312,7 +313,7 @@
     }
     .icon-error-special {
         position: absolute;
-        right: 0.875rem;
+        right: 0.675rem;
         top: 6.875rem;
     }
     .ms-checkbox {

@@ -20,6 +20,7 @@
       @displayPopupError="isActivePopupError = true"
       @loadStore="loadStore"
       @displayPopupSave="displayPopupSave"
+      @saveAndAddNew="saveAndAddNew"
     />
     <ms-popup-save
       v-show="isActivePopupSave"
@@ -144,6 +145,13 @@ export default {
           this.$refs.dialog.listCountry = []
         }
       })
+    },
+    saveAndAddNew (item) {
+      this.editMode = 1
+      this.isActiveDialog = false
+      setTimeout(() => {
+        this.isActiveDialog = true
+      }, 300)
     }
   }
 }

@@ -48,6 +48,7 @@
             <div
               class="ms-icon-error icon-error-special"
               v-if="isWarningName"
+              :title ="this.errorValidate"
             ></div>
           </div>
         </div>
@@ -188,11 +189,11 @@
           </div>
         </div>
         <div class="ms-footer-right">
-          <div class="ms-btn-save ms-footer-btn-common" @click="saveData(0)">
+          <div class="ms-btn-save ms-footer-btn-common" @click="saveData(1)">
             <div class="ms-icon-common ms-btn-save-icon"></div>
             <div class="ms-btn-save-text">Lưu</div>
           </div>
-          <div class="ms-btn-build ms-footer-btn-common" @click="saveData(1)">
+          <div class="ms-btn-build ms-footer-btn-common" @click="saveData(2)">
             <div class="ms-btn-build-icon ms-icon-common"></div>
             <div class="ms-btn-build-text">Lưu và thêm mới</div>
           </div>
@@ -206,6 +207,7 @@
   </div>
 </template>
 <script>
+import { Msg } from '../../constant/types'
 export default {
   name: 'msDialog',
   data () {
@@ -227,7 +229,8 @@ export default {
         createdBy: '',
         modifiedDate: '1970-01-01T01:45:10',
         modifiedBy: '',
-        editMode: 0
+        editMode: 0,
+        errorValidate: Msg.errorValidate
       },
       storeDefault: {
         storeId: '00000000-0000-0000-0000-000000000000',
@@ -498,7 +501,7 @@ export default {
           if (response.data.success === true) {
             this.$vToastify.success(response.data.message)
             this.$emit('loadStore')
-            this.exitDialog()
+            this.checkStatusDialog(this.editMode, key)
           } else {
             this.$emit('displayPopupError')
           }
@@ -526,7 +529,6 @@ export default {
           }
         }
       }
-      this.store.provinceId = this.provinceId
 
       setTimeout(() => {
         this.getProvinceById()
@@ -575,6 +577,29 @@ export default {
           this.$refs.cbbWard.itemSelected.text = response.data.data[0].wardName
           this.$refs.cbbWard.itemSelected.value = response.data.data[0].wardId
         })
+      }
+    },
+    /**
+     * Hàm kiểm tra trạng thái của dialog
+     * CreatedBy: LVDat (19/06/2021)
+     */
+    checkStatusDialog (editMode, status) {
+      if (status === 1) {
+        this.exitDialog()
+      } else if (editMode === 1 && status === 2) {
+        this.$emit('saveAndAddNew')
+      } else if (editMode === 2 && status === 2) {
+        this.store = this.storeDefault
+
+        this.$refs.cbbCountry.itemSelected = []
+        this.$refs.cbbProvince.itemSelected = []
+        this.$refs.cbbDistrict.itemSelected = []
+        this.$refs.cbbWard.itemSelected = []
+        this.$refs.cbbCountry.keyFilter = ''
+        this.$refs.cbbProvince.keyFilter = ''
+        this.$refs.cbbDistrict.keyFilter = ''
+        this.$refs.cbbWard.keyFilter = ''
+        this.$emit('saveAndAddNew')
       }
     }
   },
