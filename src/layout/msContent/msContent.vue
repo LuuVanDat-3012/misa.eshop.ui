@@ -134,7 +134,6 @@ export default {
      * CreatedBy: LVDat (19/06/2021)
      */
     displayPopupSave (item) {
-      console.log('item', item)
       this.axios.get('Stores/' + this.storeSelected.storeId).then(response => {
         this.storeNew = response.data.data[0]
         if (!_.isEqual(item, this.storeNew)) {
@@ -143,7 +142,7 @@ export default {
           this.isActivePopupSave = true
         } else {
           this.isActiveDialog = false
-          this.$refs.dialog.listCountry = []
+          this.$refs.dialog.exitDialog()
         }
       })
     },
@@ -152,10 +151,12 @@ export default {
      * CreatedBy: LVDat (19/06/2021)
      */
     saveAndAddNew (item) {
+      this.$refs.dialog.setToDefault()
       this.editMode = 1
       this.isActiveDialog = false
       setTimeout(() => {
         this.isActiveDialog = true
+        this.$refs.dialog.focusInput()
       }, 300)
     }
   }

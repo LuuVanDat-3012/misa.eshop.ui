@@ -20,7 +20,7 @@
     flex-direction: column;
     border-radius: 0.1875rem;
     box-shadow: rgb(136 136 136) 0px 0px 6px;
-    animation: animationDisplay 0.5s forwards;
+    animation: animationDisplay 0.8s forwards;
     /**CSS header dialog */
     .ms-dialog-header {
         height: 3.1875rem;
@@ -317,6 +317,8 @@
         position: absolute;
         right: 0.675rem;
         top: 6.875rem;
+        display: flex;
+        align-items: center;
     }
     .ms-checkbox {
         height: 18px !important;
@@ -347,15 +349,19 @@
 .msDialogEdit {
     height: calc(29.125rem + 25px);
 }
-
+.ms-error{
+    display: flex;
+    align-items: center;
+}
 .ms-error-detail {
-    background-color: #ff0000;
+    background-color: #f63232;
     color: #ffffff;
     font-size: 13px;
     z-index: 888888899999999;
-    width: 200px;
     height: 30px;
     line-height: 30px;
-    position: absolute;
-    right: -200px;
+     position: absolute;
+    right: -190px;
+    padding: 0px 5px;
+    border-radius: 3px;
 }

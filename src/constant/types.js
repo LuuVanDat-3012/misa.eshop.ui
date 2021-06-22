@@ -31,5 +31,6 @@ export const TypeStatus = [
 export const Msg = {
   errorNull: 'Trường này không được để trống',
   duplicateKey: 'Mã cửa hàng đã tồn tại vui lòng kiểm tra lại',
-  errorLength: 'Trường này không nhập quá 20 ký tự'
+  errorLength: 'Trường này không quá 25 ký tự',
+  errorDuplicate: 'Mã cửa hàng đã tồn tại'
 }

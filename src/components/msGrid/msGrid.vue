@@ -224,6 +224,7 @@ export default {
     loadStoreDefault () {
       this.isLoading = true
       this.objectFilter = this.objectFilterTemp
+      this.curentPage = 1
       this.axios
         .post('Stores/Filter', this.objectFilterTemp)
         .then(response => {
