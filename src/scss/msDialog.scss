@@ -310,6 +310,8 @@
         width: 0.875rem;
         height: 0.875rem;
         margin: 0rem 0.25rem;
+        display: flex;
+        align-items: center;
     }
     .icon-error-special {
         position: absolute;
@@ -344,4 +346,16 @@
 
 .msDialogEdit {
     height: calc(29.125rem + 25px);
+}
+
+.ms-error-detail {
+    background-color: #ff0000;
+    color: #ffffff;
+    font-size: 13px;
+    z-index: 888888899999999;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    position: absolute;
+    right: -200px;
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="ms-header">
-    <div class="ms-header-title">Chi nhánh</div>
+    <div class="ms-header-title">Cửa hàng</div>
     <div class="ms-header-box-inner">
       <div class="ms-box-combobox">
         <ms-combobox :items="this.items" ref="cbbHeader" class="ms-cbb-header"/>

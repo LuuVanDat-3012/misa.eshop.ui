@@ -26,7 +26,9 @@
               @keydown.tab="validateStoreCode"
             />
           </div>
-          <div class="ms-icon-error" v-if="isWarningCode"></div>
+          <div class="ms-icon-error" v-if="isWarningCode">
+            <div class="ms-error-detail">Trường này không được để trống</div>
+          </div>
         </div>
 
         <div class="ms-row">
@@ -254,15 +256,10 @@ export default {
       listDistrict: [],
       listProvince: [],
       listWard: [],
-      provinceId: '',
-      districtId: '',
-      wardId: '',
-      countryId: '',
       isWarningCode: false,
       isWarningAddress: false,
       isWarningName: false,
-      error: false,
-      temp: {}
+      error: false
     }
   },
   methods: {
@@ -272,9 +269,6 @@ export default {
      * CreatedBy: LVDat (19/06/2021)
      */
     closeDialog () {
-      this.store.provinceId = this.provinceId || null
-      this.store.districtId = this.districtId || null
-      this.store.wardId = this.wardId || null
       if (this.editMode === 1) {
         this.exitDialog()
       } else {
@@ -332,6 +326,9 @@ export default {
             text: element.countryName
           })
         })
+        this.store.provinceId = null
+        this.store.districtId = null
+        this.store.wardId = null
         this.$refs.cbbCountry.keyFilter = this.listCountry[0].text
         this.$refs.cbbCountry.itemSelected = this.listCountry[0]
         this.store.countryId = this.listCountry[0].value
@@ -351,6 +348,8 @@ export default {
             value: element.provinceId,
             text: element.provinceName
           })
+          this.store.districtId = null
+          this.store.wardId = null
           this.$refs.cbbProvince.keyFilter = ''
           this.$refs.cbbDistrict.keyFilter = ''
           this.$refs.cbbWard.keyFilter = ''
@@ -363,7 +362,7 @@ export default {
      */
     getDistrict (provinceId) {
       this.listDistrict = []
-      this.provinceId = provinceId
+      this.store.provinceId = provinceId
       this.axios
         .get('Districts/get/byProvince?provinceId=' + this.provinceId)
         .then((response) => {
@@ -374,10 +373,7 @@ export default {
               text: element.districtName
             })
           }
-          if (this.listDistrict.length === 0) {
-            this.districtId = null
-            this.wardId = null
-          }
+          this.store.wardId = null
           this.$refs.cbbDistrict.keyFilter = ''
           this.$refs.cbbWard.keyFilter = ''
         })
@@ -389,9 +385,8 @@ export default {
     getWard (districtId) {
       this.listWard = []
       this.store.districtId = districtId
-      this.districtId = districtId
       this.axios
-        .get('Wards/get/byDistrict?districtId=' + this.districtId)
+        .get('Wards/get/byDistrict?districtId=' + districtId)
         .then((response) => {
           for (let index = 0; index < response.data.data.length; index++) {
             var element = response.data.data[index]
@@ -408,7 +403,6 @@ export default {
         })
     },
     confirmPosition (wardId) {
-      this.wardId = wardId
       this.store.wardId = wardId
     },
     /**
@@ -472,6 +466,7 @@ export default {
       this.validateStoreCode()
       this.validateStoreName()
       this.validateStoreAddress()
+      console.log(this.store)
       // Focus vào ô input lỗi
       if (this.isWarningCode) {
         this.focusInput()
@@ -481,18 +476,15 @@ export default {
         this.$refs.inputStoreAddress.focus()
       } else {
         // Gán lại dữ liệu và thêm
-        this.store.provinceId = this.provinceId || null
-        this.store.districtId = this.districtId || null
-        this.store.wardId = this.wardId || null
-        if (this.$refs.cbbProvince.keyFilter === '') {
-          this.store.provinceId = null
-        }
-        if (this.$refs.cbbDistrict.keyFilter === '') {
-          this.store.districtId = null
-        }
-        if (this.$refs.cbbWard.keyFilter === '') {
-          this.store.wardId = null
-        }
+        // if (this.$refs.cbbProvince.keyFilter === '') {
+        //   this.store.provinceId = null
+        // }
+        // if (this.$refs.cbbDistrict.keyFilter === '') {
+        //   this.store.districtId = null
+        // }
+        // if (this.$refs.cbbWard.keyFilter === '') {
+        //   this.store.wardId = null
+        // }
         this.store.editMode = this.editMode
         var listStore = []
         listStore.push(this.store)
@@ -501,7 +493,7 @@ export default {
           if (response.data.success === true) {
             this.$vToastify.success(response.data.message)
             this.$emit('loadStore')
-            this.checkStatusDialog(this.editMode, key)
+            this.checkStatusDialog(key)
           } else {
             this.$emit('displayPopupError')
           }
@@ -518,14 +510,14 @@ export default {
       this.provinceId = this.store.provinceId
       this.districtId = this.store.districtId
       this.wardId = this.store.wardId
-      if (this.countryId !== null) {
+      if (this.store.countryId !== null) {
         this.getCountry()
-        this.getProvince(this.countryId)
+        this.getProvince(this.store.countryId)
         if (this.provinceId !== null) {
-          this.getDistrict(this.provinceId)
+          this.getDistrict(this.store.provinceId)
           if (this.districtId !== null) {
             this.getWard(this.districtId)
-            this.confirmPosition(this.wardId)
+            this.confirmPosition(this.store.wardId)
           }
         }
       }
@@ -583,14 +575,11 @@ export default {
      * Hàm kiểm tra trạng thái của dialog
      * CreatedBy: LVDat (19/06/2021)
      */
-    checkStatusDialog (editMode, status) {
+    checkStatusDialog (status) {
       if (status === 1) {
         this.exitDialog()
-      } else if (editMode === 1 && status === 2) {
-        this.$emit('saveAndAddNew')
-      } else if (editMode === 2 && status === 2) {
+      } else {
         this.store = this.storeDefault
-
         this.$refs.cbbCountry.itemSelected = []
         this.$refs.cbbProvince.itemSelected = []
         this.$refs.cbbDistrict.itemSelected = []

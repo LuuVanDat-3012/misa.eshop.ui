@@ -1,5 +1,4 @@
 import Vue from 'vue'
-
 import msMenu from '@/layout/msMenu/msMenu.vue'
 import msHeader from '@/layout/msHeader/msHeader.vue'
 import msContent from '@/layout/msContent/msContent.vue'

@@ -6,8 +6,7 @@
  * 4: Kết thúc bằng
  * 5: Không chứa
  */
-export const TypeFilter =
-[
+export const TypeFilter = [
   { key: '*', text: 'Chứa', value: 1 },
   { key: '=', text: 'Bằng', value: 2 },
   { key: '+', text: 'Bắt đầu bằng', value: 3 },
@@ -26,8 +25,11 @@ export const TypeStatus = [
   { value: 1, text: 'Đang hoạt động' },
   { value: 0, text: 'Ngừng hoạt động' }
 ]
-
+/**
+     * Msg
+     */
 export const Msg = {
-  errorValidate: 'Trường này không được để trống',
-  duplicateKey: 'Mã cửa hàng đã tồn tại vui lòng kiểm tra lại'
+  errorNull: 'Trường này không được để trống',
+  duplicateKey: 'Mã cửa hàng đã tồn tại vui lòng kiểm tra lại',
+  errorLength: 'Trường này không nhập quá 20 ký tự'
 }

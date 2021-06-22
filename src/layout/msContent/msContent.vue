@@ -134,6 +134,7 @@ export default {
      * CreatedBy: LVDat (19/06/2021)
      */
     displayPopupSave (item) {
+      console.log('item', item)
       this.axios.get('Stores/' + this.storeSelected.storeId).then(response => {
         this.storeNew = response.data.data[0]
         if (!_.isEqual(item, this.storeNew)) {
@@ -146,6 +147,10 @@ export default {
         }
       })
     },
+    /**
+     * Hàm lưu và thêm mới
+     * CreatedBy: LVDat (19/06/2021)
+     */
     saveAndAddNew (item) {
       this.editMode = 1
       this.isActiveDialog = false
