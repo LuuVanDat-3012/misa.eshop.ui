@@ -32,5 +32,7 @@ export const Msg = {
   errorNull: 'Trường này không được để trống',
   duplicateKey: 'Mã cửa hàng đã tồn tại vui lòng kiểm tra lại',
   errorLength: 'Trường này không quá 25 ký tự',
-  errorDuplicate: 'Mã cửa hàng đã tồn tại'
+  errorDuplicate: 'Mã cửa hàng đã tồn tại',
+  deleteSuccess: 'XÓa dữ liệu thành công',
+  notContainLetter: 'Trường này không chưa ký tự chữ'
 }

@@ -151,7 +151,7 @@
 
       <div class="ms-paging-detail">
         Hiện thị
-        {{ (objectFilter.pageIndex - 1) * objectFilter.pageSize + 1 }} -
+        {{ (curentPage - 1) * objectFilter.pageSize + 1 }} -
         {{ maxSize }} trên {{ totalRecord }} kết quả
       </div>
     </div>
@@ -223,7 +223,19 @@ export default {
      */
     loadStoreDefault () {
       this.isLoading = true
-      this.objectFilter = this.objectFilterTemp
+      this.objectFilter = {
+        filterCode: '',
+        filterName: '',
+        filterAddress: '',
+        filterPhone: '',
+        filterStatus: 2,
+        optionCode: 1,
+        optionName: 1,
+        optionAddress: 1,
+        optionPhone: 1,
+        pageIndex: 1,
+        pageSize: 15
+      }
       this.curentPage = 1
       this.axios
         .post('Stores/Filter', this.objectFilterTemp)

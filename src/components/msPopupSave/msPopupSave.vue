@@ -45,7 +45,7 @@ export default {
       this.$emit('closePopupSave')
     },
     closeDialog () {
-      this.$emit('closeDialog')
+      this.$emit('closeDialogByPopupSave')
     },
     saveData () {
       var listStore = []

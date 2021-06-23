@@ -27,7 +27,7 @@
           </div>
           <div class="ms-error" v-if="isWarningCode">
             <div class="ms-icon-error"></div>
-            <span class="ms-error-detail">{{errorStoreCode}}</span>
+            <span class="ms-error-detail">{{ errorStoreCode }}</span>
           </div>
         </div>
 
@@ -47,9 +47,9 @@
               ref="inputStoreName"
             />
           </div>
-           <div class="ms-error" v-if="isWarningName">
-              <div class="ms-icon-error"></div>
-              <span class="ms-error-detail">{{errorNull}}</span>
+          <div class="ms-error" v-if="isWarningName">
+            <div class="ms-icon-error"></div>
+            <span class="ms-error-detail">{{ errorNull }}</span>
           </div>
         </div>
 
@@ -73,29 +73,48 @@
           </div>
           <div class="ms-error" v-if="isWarningAddress">
             <div class="ms-icon-error"></div>
-            <span class="ms-error-detail">{{errorNull}}</span>
+            <span class="ms-error-detail">{{ errorNull }}</span>
           </div>
         </div>
 
         <div class="ms-row ms-row-2-col">
           <div class="ms-col">
             <div class="ms-row-text">Số điện thoại</div>
-            <div class="ms-form-text">
+            <div class="ms-form-text" :class="{ zoomOutField: isWarningPhone }">
               <input
                 type="text"
                 class="ms-field-input"
                 v-model="store.phoneNumber"
+                @keyup="validatePhone(store.phoneNumber)"
+                ref="phoneNumber"
               />
+            </div>
+            <div class="ms-error" v-if="isWarningPhone">
+              <div class="ms-icon-error-not-required"></div>
+              <span class="ms-error-detail-not-required">{{
+                errorNotContainLetter
+              }}</span>
             </div>
           </div>
           <div class="ms-col">
             <div class="ms-row-text text-padding-10px">Mã số thuế</div>
-            <div class="ms-form-text">
+            <div
+              class="ms-form-text"
+              :class="{ zoomOutField: isWarningTaxCode }"
+            >
               <input
                 type="text"
                 class="ms-field-input"
                 v-model="store.storeTaxCode"
+                @keyup="validateTaxCode(store.storeTaxCode)"
+                ref="taxCode"
               />
+            </div>
+            <div class="ms-error" v-if="isWarningTaxCode">
+              <div class="ms-icon-error-not-required"></div>
+              <span class="ms-error-detail-not-required">{{
+                errorNotContainLetter
+              }}</span>
             </div>
           </div>
         </div>
@@ -258,9 +277,12 @@ export default {
       isWarningCode: false,
       isWarningAddress: false,
       isWarningName: false,
+      isWarningTaxCode: false,
+      isWarningPhone: false,
       error: false,
       errorNull: Msg.errorNull,
-      errorStoreCode: Msg.errorNull
+      errorStoreCode: Msg.errorNull,
+      errorNotContainLetter: Msg.notContainLetter
     }
   },
   methods: {
@@ -283,18 +305,7 @@ export default {
      * CreatedBy: LVDat (19/06/2021)
      */
     saveData (key) {
-      // Validate 1 dữ liệu
-      this.validateStoreCode()
-      this.validateStoreName()
-      this.validateStoreAddress()
-      // Focus vào ô input lỗi
-      if (this.isWarningCode) {
-        this.focusInput()
-      } else if (this.isWarningName) {
-        this.$refs.inputStoreName.focus()
-      } else if (this.isWarningAddress) {
-        this.$refs.inputStoreAddress.focus()
-      } else {
+      if (this.preSave()) {
         this.store.editMode = this.editMode
         var listStore = []
         listStore.push(this.store)
@@ -310,6 +321,35 @@ export default {
           }
         })
       }
+    },
+    /**
+     * HÀm validate dữ liệu trước khi save
+     */
+    preSave () {
+    // Validate 1 dữ liệu
+      this.validateStoreCode()
+      this.validateStoreName()
+      this.validateStoreAddress()
+      this.validatePhone()
+      this.validateTaxCode()
+      // Focus vào ô input lỗi
+      if (this.isWarningCode) {
+        this.focusInput()
+        return false
+      } else if (this.isWarningName) {
+        this.$refs.inputStoreName.focus()
+        return false
+      } else if (this.isWarningAddress) {
+        this.$refs.inputStoreAddress.focus()
+        return false
+      } else if (this.isWarningPhone) {
+        this.$refs.phoneNumber.focus()
+        return false
+      } else if (this.isWarningTaxCode) {
+        this.$refs.taxCode.focus()
+        return false
+      }
+      return true
     },
     /**
      * Hàm load thông tin: Quốc gia, tỉnh/thành phố, quận/huyện, xã/phường
@@ -350,9 +390,9 @@ export default {
         this.axios.get('Provinces/' + provinceId).then((response) => {
           this.$refs.cbbProvince.keyFilter = response.data.data[0].provinceName
           this.$refs.cbbProvince.itemSelected.text =
-        response.data.data[0].provinceName
+            response.data.data[0].provinceName
           this.$refs.cbbProvince.itemSelected.value =
-        response.data.data[0].provinceId
+            response.data.data[0].provinceId
         })
       }
     },
@@ -418,7 +458,11 @@ export default {
      * CreatedBy: LVDat(19/06/2021)
      */
     selectStoreStatus () {
-      if (this.store.status === 0) { this.store.status = 1 } else { this.store.status = 0 }
+      if (this.store.status === 0) {
+        this.store.status = 1
+      } else {
+        this.store.status = 0
+      }
     },
     /**
      * Đóng dialog khi click button "Hủy bỏ"
@@ -433,7 +477,24 @@ export default {
      * CreatedBy: LVDat(19/06/2021)
      */
     setToDefault () {
-      this.store = this.storeDefault
+      this.store = {
+        storeId: '00000000-0000-0000-0000-000000000000',
+        storeCode: '',
+        storeName: '',
+        address: '',
+        phoneNumber: '',
+        storeTaxCode: '',
+        provinceId: '',
+        districtId: '',
+        wardId: '',
+        street: '',
+        status: 1,
+        createdDate: '2017-08-15T13:32:46',
+        createdBy: '',
+        modifiedDate: '1970-01-01T01:45:10',
+        modifiedBy: '',
+        editMode: 0
+      }
       this.listCountry = []
       this.listDistrict = []
       this.listProvince = []
@@ -441,6 +502,11 @@ export default {
       this.isWarningCode = false
       this.isWarningAddress = false
       this.isWarningName = false
+      this.isWarningPhone = false
+      this.isWaringTaxCode = false
+      this.$refs.cbbProvince.keyFilter = ''
+      this.$refs.cbbDistrict.keyFilter = ''
+      this.$refs.cbbWard.keyFilter = ''
     },
     /**
      * Hàm lấy toàn bộ danh sách quốc gia
@@ -578,15 +644,50 @@ export default {
       }
     },
     /**
+     * Hàm validate ssoso điện thoại
+     * CreatedBy: LVDat (15/06/2021)
+     */
+    validatePhone () {
+      if (!this.validateNotContainLetter(this.store.phoneNumber)) {
+        this.isWarningPhone = true
+      } else {
+        this.isWarningPhone = false
+      }
+    },
+    validateTaxCode () {
+      if (!this.validateNotContainLetter(this.store.storeTaxCode)) {
+        this.isWarningTaxCode = true
+      } else {
+        this.isWarningTaxCode = false
+      }
+    },
+    /**
      * Hàm validate độ dài
      * CreatedBy: LVDat (15/06/2021)
      */
     validateLength (val) {
-      if (val.length > 25) { return true }
+      if (val.length > 25) {
+        return true
+      }
       return false
     },
     /**
-     * Hàm validate chung
+     * Hàm kiểm tra không có chữ trong dãy ký tự
+     * CreatedBy: LVDat (15/06/2021)
+     */
+    validateNotContainLetter (val) {
+      var numbers = /^[0-9]+$/
+      if (val) {
+        if (val.match(numbers)) {
+          return true
+        } else {
+          return false
+        }
+      }
+      return true
+    },
+    /**
+     * Hàm validate không được null hoặc bỏ trống
      * CreatedBy: LVDat (15/06/2021)
      */
     validateData (val) {

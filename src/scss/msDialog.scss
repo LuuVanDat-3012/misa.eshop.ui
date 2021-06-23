@@ -349,10 +349,12 @@
 .msDialogEdit {
     height: calc(29.125rem + 25px);
 }
-.ms-error{
+
+.ms-error {
     display: flex;
     align-items: center;
 }
+
 .ms-error-detail {
     background-color: #f63232;
     color: #ffffff;
@@ -360,8 +362,39 @@
     z-index: 888888899999999;
     height: 30px;
     line-height: 30px;
-     position: absolute;
+    position: absolute;
     right: -190px;
     padding: 0px 5px;
     border-radius: 3px;
+}
+
+.zoomOutField {
+    width: 156px !important;
+    border: 1px solid #f63232 !important;
+}
+
+.ms-icon-error-not-required {
+    background: url("../../assets/icon/error_input.png") no-repeat -0.0625rem -0.0625rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin: 0rem 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.ms-error-detail-not-required {
+    background-color: #f63232;
+    color: #ffffff;
+    font-size: 13px;
+    z-index: 888888899999999;
+    height: 30px;
+    line-height: 30px;
+    position: absolute;
+    padding: 0px 5px;
+    border-radius: 3px;
+    display: none;
+}
+
+.ms-icon-error-not-required:hover .ms-error-detail-not-required {
+    display: block;
 }

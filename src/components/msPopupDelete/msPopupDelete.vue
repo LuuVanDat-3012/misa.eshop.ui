@@ -45,13 +45,12 @@ export default {
       var tmp = []
       this.store.editMode = 4
       tmp.push(this.store)
-      console.log('xoas')
       this.axios.post('Stores', tmp).then(response => {
+        this.$vToastify.success(response.data.message)
         // Gọi component cha load dữ liệu
         this.$emit('loadStore')
         // Gọi component cha đóng popup
         this.$emit('closePopupDelete')
-        console.log('xoas')
       })
     },
     /**

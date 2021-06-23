@@ -26,7 +26,7 @@
       v-show="isActivePopupSave"
       @loadStore="loadStore"
       @closePopupSave="isActivePopupSave = false"
-      @closeDialog="closeDialog"
+      @closeDialogByPopupSave="closeDialogByPopupSave"
       ref="popupSave"
     />
     <ms-popup-delete
@@ -72,6 +72,13 @@ export default {
     closeDialog () {
       this.isActivePopupSave = false
       this.isActiveDialog = false
+    },
+    /**
+     * Hàm đóng dialog được gửi bới poup save
+     */
+    closeDialogByPopupSave () {
+      this.isActiveDialog = false
+      this.$refs.dialog.exitDialog()
     },
     /**
      * Hàm gửi yêu cầu load lại dữ liệu
@@ -150,14 +157,16 @@ export default {
      * Hàm lưu và thêm mới
      * CreatedBy: LVDat (19/06/2021)
      */
-    saveAndAddNew (item) {
+    saveAndAddNew () {
       this.$refs.dialog.setToDefault()
       this.editMode = 1
       this.isActiveDialog = false
       setTimeout(() => {
         this.isActiveDialog = true
+        this.$refs.dialog.getCountry()
+        this.$refs.dialog.getProvince()
         this.$refs.dialog.focusInput()
-      }, 300)
+      }, 500)
     }
   }
 }
